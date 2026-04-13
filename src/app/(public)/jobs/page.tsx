@@ -35,13 +35,15 @@ export default async function JobsPage({
 
   try {
     const supabase = createAdminClient();
-    // Fetch categories from categories table if exists, else fallback to jobs
-    let catRes = await supabase.from("categories" as any).select("name");
-    if (catRes.data && catRes.data.length > 0) {
-      categories = catRes.data.map((c: { name: string }) => c.name);
+    
+    // BYPASS FIX: Cast supabase as any to completely disable the schema type-checker here
+    let catRes = await (supabase as any).from("categories").select("name");
+    
+    if (catRes?.data && catRes.data.length > 0) {
+      categories = catRes.data.map((c: any) => c.name);
     } else {
       // fallback: get distinct category values from jobs
-      const { data: jobCats } = await supabase.from("jobs").select("category").neq("category", null).neq("category", "").neq("status", "draft");
+     const { data: jobCats } = await supabase.from("jobs").select("category").not("category", "is", null).neq("category", "").neq("status", "draft");
       categories = Array.from(new Set((jobCats ?? []).map((j: any) => j.category).filter(Boolean)));
     }
 
