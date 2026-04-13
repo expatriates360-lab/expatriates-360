@@ -31,9 +31,20 @@ export default async function JobsPage({
 
   let jobs: Partial<Job>[] = [];
   let total = 0;
+  let categories: string[] = [];
 
   try {
     const supabase = createAdminClient();
+    // Fetch categories from categories table if exists, else fallback to jobs
+    let catRes = await supabase.from("categories").select("name");
+    if (catRes.data && catRes.data.length > 0) {
+      categories = catRes.data.map((c: { name: string }) => c.name);
+    } else {
+      // fallback: get distinct category values from jobs
+      const { data: jobCats } = await supabase.from("jobs").select("category").neq("category", null).neq("category", "").neq("status", "draft");
+      categories = Array.from(new Set((jobCats ?? []).map((j: any) => j.category).filter(Boolean)));
+    }
+
     let query = supabase
       .from("jobs")
       .select(
@@ -75,6 +86,7 @@ export default async function JobsPage({
             defaultSearch={search}
             defaultCategory={category}
             defaultLocation={location}
+            categories={categories}
           />
         </div>
       </section>

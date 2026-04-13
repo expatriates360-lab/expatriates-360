@@ -12,16 +12,18 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { useCallback, useState } from "react";
-import { JOB_CATEGORIES, LOCATIONS } from "@/lib/constants";
+import { LOCATIONS } from "@/lib/constants";
 
 export function JobsFilter({
   defaultSearch,
   defaultCategory,
   defaultLocation,
+  categories,
 }: {
   defaultSearch: string;
   defaultCategory: string;
   defaultLocation: string;
+  categories: string[];
 }) {
   const router = useRouter();
   const [search, setSearch] = useState(defaultSearch);
@@ -66,7 +68,7 @@ export function JobsFilter({
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="">All categories</SelectItem>
-          {JOB_CATEGORIES.map((c) => (
+          {categories.map((c) => (
             <SelectItem key={c} value={c}>
               {c}
             </SelectItem>
