@@ -84,12 +84,21 @@ export function Footer() {
 
         <Separator className="my-8" />
 
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
-          <p>© {new Date().getFullYear()} Expatriates 360. All rights reserved.</p>
-          <p>
-            Built for expats,{" "}
-            <span className="gradient-text font-medium">by expats</span>.
-          </p>
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted-foreground border-t border-border pt-6 mt-8">
+          <div className="flex flex-col sm:flex-row items-center gap-2 w-full justify-between">
+            <span>© {new Date().getFullYear()} Expatriates 360. All rights reserved.</span>
+            <span className="flex items-center gap-1">
+              Developed by
+              <a
+                href="https://axiusdigital.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium text-sm text-muted-foreground hover:text-primary transition-colors duration-300 ml-1"
+              >
+                Axius Digital
+              </a>
+            </span>
+          </div>
         </div>
       </div>
     </footer>
