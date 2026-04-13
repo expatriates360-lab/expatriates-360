@@ -1,0 +1,110 @@
+import { NextResponse } from "next/server";
+import { auth } from "@clerk/nextjs/server";
+import { createAdminClient } from "@/lib/supabase";
+import { JOB_CATEGORIES, LOCATIONS, DURATIONS } from "@/lib/constants";
+
+interface PostJobBody {
+  jobTitle: string;
+  jobDescription: string;
+  positions: number;
+  location: string;
+  duration: string;
+  salaryRate: string;
+  category: string;
+  subcategory?: string | null;
+  companyName: string;
+  companyPhone?: string | null;
+  companyEmail?: string | null;
+  companyAddress?: string | null;
+}
+
+/* ── GET: list approved jobs (public) ─────────────────────── */
+export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url);
+  const category = searchParams.get("category");
+  const location = searchParams.get("location");
+  const search = searchParams.get("search");
+  const page = Math.max(1, parseInt(searchParams.get("page") ?? "1", 10));
+  const limit = 12;
+  const from = (page - 1) * limit;
+
+  const supabase = createAdminClient();
+  let query = supabase
+    .from("jobs")
+    .select("id, job_title, company_name, location, salary_rate, duration, category, positions, status, created_at", { count: "exact" })
+    .eq("status", "approved")
+    .order("created_at", { ascending: false })
+    .range(from, from + limit - 1);
+
+  if (category) query = query.eq("category", category);
+  if (location) query = query.eq("location", location);
+  if (search) query = query.ilike("job_title", `%${search}%`);
+
+  const { data, count, error } = await query;
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+  return NextResponse.json({ jobs: data ?? [], total: count ?? 0, page, limit });
+}
+
+/* ── POST: create job (employer only) ─────────────────────── */
+export async function POST(req: Request) {
+  const { userId } = await auth();
+  if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const supabase = createAdminClient();
+
+  // Confirm user is an employer
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", userId)
+    .single();
+
+  if (!profile || profile.role !== "employer") {
+    return NextResponse.json({ error: "Only employers can post jobs" }, { status: 403 });
+  }
+
+  let body: PostJobBody;
+  try {
+    body = (await req.json()) as PostJobBody;
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+  }
+
+  // Validate required fields
+  if (!body.jobTitle?.trim()) return NextResponse.json({ error: "Job title is required" }, { status: 400 });
+  if (!body.jobDescription?.trim()) return NextResponse.json({ error: "Job description is required" }, { status: 400 });
+  if (!body.companyName?.trim()) return NextResponse.json({ error: "Company name is required" }, { status: 400 });
+  if (typeof body.positions !== "number" || body.positions < 1) return NextResponse.json({ error: "Invalid positions count" }, { status: 400 });
+  if (!LOCATIONS.includes(body.location as (typeof LOCATIONS)[number])) return NextResponse.json({ error: "Invalid location" }, { status: 400 });
+  if (!DURATIONS.includes(body.duration as (typeof DURATIONS)[number])) return NextResponse.json({ error: "Invalid duration" }, { status: 400 });
+  if (!JOB_CATEGORIES.includes(body.category as (typeof JOB_CATEGORIES)[number])) return NextResponse.json({ error: "Invalid category" }, { status: 400 });
+
+  const { data, error } = await supabase
+    .from("jobs")
+    .insert({
+      employer_id: userId,
+      job_title: body.jobTitle.trim(),
+      job_description: body.jobDescription.trim(),
+      positions: body.positions,
+      location: body.location,
+      duration: body.duration,
+      salary_rate: body.salaryRate.trim(),
+      category: body.category,
+      subcategory: body.subcategory ?? null,
+      company_name: body.companyName.trim(),
+      company_phone: body.companyPhone ?? null,
+      company_email: body.companyEmail ?? null,
+      company_address: body.companyAddress ?? null,
+      status: "pending",
+    })
+    .select("id")
+    .single();
+
+  if (error) {
+    console.error("[POST /api/jobs] Supabase error:", error.message);
+    return NextResponse.json({ error: "Failed to create job" }, { status: 500 });
+  }
+
+  return NextResponse.json({ id: data.id }, { status: 201 });
+}
