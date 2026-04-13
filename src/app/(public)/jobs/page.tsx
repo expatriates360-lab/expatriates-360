@@ -36,7 +36,7 @@ export default async function JobsPage({
   try {
     const supabase = createAdminClient();
     // Fetch categories from categories table if exists, else fallback to jobs
-    let catRes = await supabase.from("categories").select("name");
+    let catRes = await supabase.from("categories" as any).select("name");
     if (catRes.data && catRes.data.length > 0) {
       categories = catRes.data.map((c: { name: string }) => c.name);
     } else {
