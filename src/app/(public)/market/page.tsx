@@ -87,11 +87,11 @@ export default async function MarketPage({
               <select
                 name="category"
                 defaultValue={category}
-                className="text-sm rounded-md border border-input bg-background px-2 py-2 focus:outline-none focus:ring-2 focus:ring-ring"
+                className="text-sm rounded-md border border-input bg-background px-2 py-2 focus:outline-none focus:ring-2 focus:ring-ring cursor-pointer"
               >
-                <option value="">All categories</option>
+                <option value="" className="cursor-pointer">All categories</option>
                 {LISTING_CATEGORIES.map((c) => (
-                  <option key={c.value} value={c.value}>
+                  <option key={c.value} value={c.value} className="cursor-pointer">
                     {c.label}
                   </option>
                 ))}
@@ -102,11 +102,11 @@ export default async function MarketPage({
               <select
                 name="location"
                 defaultValue={location}
-                className="text-sm rounded-md border border-input bg-background px-2 py-2 focus:outline-none focus:ring-2 focus:ring-ring"
+                className="text-sm rounded-md border border-input bg-background px-2 py-2 focus:outline-none focus:ring-2 focus:ring-ring cursor-pointer"
               >
-                <option value="">All locations</option>
+                <option value="" className="cursor-pointer">All locations</option>
                 {LOCATIONS.map((l) => (
-                  <option key={l} value={l}>
+                  <option key={l} value={l} className="cursor-pointer">
                     {l}
                   </option>
                 ))}

@@ -332,11 +332,7 @@ export default async function CandidateDetailPage({
                           className="absolute -inset-0.5 rounded-xl bg-gradient-to-r from-[#2563eb] via-[#7c3aed] to-[#0ea5e9] opacity-60 blur group-hover:opacity-90 transition-opacity duration-300"
                         />
                         <a
-                          href={
-                            candidate.cv_url.startsWith('http')
-                              ? candidate.cv_url.replace('http://', 'https://').replace('/upload/', '/upload/fl_attachment/')
-                              : `https://${candidate.cv_url}`.replace('/upload/', '/upload/fl_attachment/')
-                          }
+                          href={candidate.cv_url}
                           target="_blank"
                           rel="noopener noreferrer"
                           download

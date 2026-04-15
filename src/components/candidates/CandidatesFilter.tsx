@@ -61,13 +61,13 @@ export function CandidatesFilter({
           apply(search, val, location);
         }}
       >
-        <SelectTrigger className="sm:w-[200px]">
+        <SelectTrigger className="sm:w-[200px] cursor-pointer">
           <SelectValue placeholder="All professions" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="">All professions</SelectItem>
+          <SelectItem value="" className="cursor-pointer">All professions</SelectItem>
           {PROFESSIONS.map((p) => (
-            <SelectItem key={p} value={p}>
+            <SelectItem key={p} value={p} className="cursor-pointer">
               {p}
             </SelectItem>
           ))}
@@ -81,13 +81,13 @@ export function CandidatesFilter({
           apply(search, profession, val);
         }}
       >
-        <SelectTrigger className="sm:w-[160px]">
+        <SelectTrigger className="sm:w-[160px] cursor-pointer">
           <SelectValue placeholder="All locations" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="">All locations</SelectItem>
+          <SelectItem value="" className="cursor-pointer">All locations</SelectItem>
           {LOCATIONS.map((l) => (
-            <SelectItem key={l} value={l}>
+            <SelectItem key={l} value={l} className="cursor-pointer">
               {l}
             </SelectItem>
           ))}
@@ -96,6 +96,7 @@ export function CandidatesFilter({
       <Button
         variant="outline"
         onClick={() => apply(search, profession, location)}
+        className="sm:w-auto cursor-pointer"
       >
         Search
       </Button>
@@ -108,6 +109,7 @@ export function CandidatesFilter({
             setLocation("");
             router.push("/candidates");
           }}
+          className="sm:w-auto cursor-pointer"
         >
           Clear
         </Button>

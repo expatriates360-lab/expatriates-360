@@ -59,15 +59,27 @@ export async function uploadToCloudinary(
  * Safe to call on any URL — non-Cloudinary URLs are returned unchanged.
  */
 export function normalizeCvUrl(url: string): string {
-  // Step 1: normalise resource type to /raw/
-  let normalized = url.replace(
-    /\/(?:image|video)\/upload\//,
-    "/raw/upload/"
+  // Step 1: ensure https://
+  let normalized = url.startsWith("http://")
+    ? url.replace("http://", "https://")
+    : url.startsWith("https://")
+    ? url
+    : `https://${url}`;
+
+  // Step 2: use /image/upload/ — /raw/upload/ causes browser connection errors for PDFs
+  normalized = normalized.replace(
+    /\/(?:raw|video)\/upload\//,
+    "/image/upload/"
   );
-  // Step 2: inject fl_attachment/ after /upload/ (only once, skip if already present)
+
+  // Step 3: inject fl_attachment/ after /upload/ (only once)
   if (!normalized.includes("fl_attachment")) {
     normalized = normalized.replace("/upload/", "/upload/fl_attachment/");
   }
+
+  // Step 4: remove any accidental duplicate fl_attachment
+  normalized = normalized.replace(/\/fl_attachment\/fl_attachment\//g, "/fl_attachment/");
+
   return normalized;
 }
 
