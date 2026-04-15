@@ -7,8 +7,8 @@ const contactInfo = [
   {
     icon: Mail,
     label: "Email",
-    value: "hello@expatriates360.com",
-    href: "mailto:hello@expatriates360.com",
+    value: "contact@expatriates360.com",
+    href: "mailto:contact@expatriates360.com",
   },
   {
     icon: MapPin,
@@ -19,8 +19,8 @@ const contactInfo = [
   {
     icon: MessageCircle,
     label: "WhatsApp",
-    value: "+1 (555) 000-0000",
-    href: "https://wa.me/15550000000",
+    value: "053-5048401",
+    href: "https://wa.me/0535048401",
   },
 ];
 
