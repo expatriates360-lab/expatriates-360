@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Mail, MapPin, MessageCircle, Send, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 const contactInfo = [
   {
@@ -41,10 +42,25 @@ export function ContactContent() {
     if (!form.name.trim() || !form.email.trim() || !form.message.trim()) return;
 
     setStatus("sending");
-    // Simulate async send — wire up to your API route to actually send
-    await new Promise((r) => setTimeout(r, 1200));
-    setStatus("sent");
-    setForm({ name: "", email: "", message: "" });
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fullName: form.name,
+          email: form.email,
+          message: form.message,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? "Failed to send message");
+      setStatus("sent");
+      setForm({ name: "", email: "", message: "" });
+      toast.success("Message sent! We'll get back to you shortly.");
+    } catch (err) {
+      setStatus("error");
+      toast.error(err instanceof Error ? err.message : "Something went wrong. Please try again.");
+    }
   }
 
   return (
@@ -190,7 +206,7 @@ export function ContactContent() {
               <button
                 type="submit"
                 disabled={status === "sending"}
-                className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground hover:opacity-90 disabled:opacity-60 transition-opacity"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground hover:opacity-90 disabled:opacity-60 transition-opacity cursor-pointer"
               >
                 {status === "sending" ? (
                   <>
