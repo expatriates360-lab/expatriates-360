@@ -54,10 +54,12 @@ export function Header() {
             <Image
               src="/assets/logo new.png"
               alt="Expatriates 360"
-              width={120}
-              height={36}
-              className="h-9 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
-              priority
+              width={190}
+              height={29}
+              quality={100}
+              priority={true}
+              unoptimized={true}
+              className="h-[29px] w-auto object-contain"
             />
           </Link>
 
