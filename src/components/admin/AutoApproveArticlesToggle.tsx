@@ -26,8 +26,8 @@ export function AutoApproveArticlesToggle({ initialValue }: AutoApproveArticlesT
       setEnabled(value);
       toast.success(
         value
-          ? "Auto-approve enabled — new and edited articles will be published instantly."
-          : "Auto-approve disabled — articles require manual review."
+          ? "Auto-approve enabled - new and edited articles will be published instantly."
+          : "Auto-approve disabled - articles require manual review."
       );
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Something went wrong");

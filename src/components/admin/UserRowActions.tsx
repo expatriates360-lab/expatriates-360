@@ -83,7 +83,7 @@ export function UserRowActions({ userId, currentRole, selfId }: UserRowActionsPr
         onClick={handleDelete}
         disabled={deleteLoading || isSelf}
       >
-        {deleteLoading ? "…" : "Delete"}
+        {deleteLoading ? "..." : "Delete"}
       </Button>
     </div>
   );

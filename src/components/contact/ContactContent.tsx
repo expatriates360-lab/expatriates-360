@@ -195,7 +195,7 @@ export function ContactContent() {
                 {status === "sending" ? (
                   <>
                     <Loader2 className="h-4 w-4 animate-spin" />
-                    Sending…
+                    Sending...
                   </>
                 ) : (
                   <>

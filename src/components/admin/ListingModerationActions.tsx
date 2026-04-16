@@ -88,7 +88,7 @@ export function ListingModerationActions({
             onClick={() => updateStatus("approved")}
             disabled={loading !== null}
           >
-            {loading === "approve" ? "…" : "Approve"}
+            {loading === "approve" ? "..." : "Approve"}
           </Button>
         )}
         {status !== "rejected" && (
@@ -99,7 +99,7 @@ export function ListingModerationActions({
             onClick={() => updateStatus("rejected")}
             disabled={loading !== null}
           >
-            {loading === "reject" ? "…" : "Reject"}
+            {loading === "reject" ? "..." : "Reject"}
           </Button>
         )}
       </div>
@@ -194,7 +194,7 @@ export function ListingModerationActions({
                   onClick={() => { updateStatus("approved"); setOpen(false); }}
                   disabled={loading !== null}
                 >
-                  {loading === "approve" ? "Approving…" : "Approve"}
+                  {loading === "approve" ? "Approving..." : "Approve"}
                 </Button>
               )}
               {status !== "rejected" && (
@@ -204,7 +204,7 @@ export function ListingModerationActions({
                   onClick={() => { updateStatus("rejected"); setOpen(false); }}
                   disabled={loading !== null}
                 >
-                  {loading === "reject" ? "Rejecting…" : "Reject"}
+                  {loading === "reject" ? "Rejecting..." : "Reject"}
                 </Button>
               )}
               <Button variant="outline" size="sm" onClick={() => setOpen(false)}>

@@ -100,7 +100,7 @@ export function OrderCard({ order }: { order: OrderWithListing }) {
                 {isPending ? (
                   <span className="flex items-center gap-1.5">
                     <Loader2 className="h-3 w-3 animate-spin" />
-                    Updating…
+                    Updating...
                   </span>
                 ) : (
                   <SelectValue />
@@ -137,7 +137,7 @@ export function OrderCard({ order }: { order: OrderWithListing }) {
           <div className="space-y-4 text-sm">
             {/* Order summary */}
             <div className="rounded-lg border divide-y">
-              <Row label="Product" value={order.marketplace_listings?.title ?? "—"} />
+              <Row label="Product" value={order.marketplace_listings?.title ?? "-"} />
               <Row label="Price" value={`${order.currency} ${order.price}`} />
               <Row
                 label="Date"
@@ -165,7 +165,7 @@ export function OrderCard({ order }: { order: OrderWithListing }) {
             </p>
             <div className="rounded-lg border divide-y">
               <Row label="Full Name" value={order.delivery_name} />
-              <Row label="Email" value={order.profiles?.email ?? "—"} />
+              <Row label="Email" value={order.profiles?.email ?? "-"} />
               <Row label="Phone" value={order.delivery_phone} />
               <Row label="Delivery Address" value={order.delivery_address} />
               <Row label="Payment Method" value={order.payment_method} />

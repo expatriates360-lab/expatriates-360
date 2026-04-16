@@ -10,7 +10,8 @@ import { Loader2, Truck } from "lucide-react";
 interface CheckoutFormProps {
   listingId: string;
   sellerId: string;
-  price: string;
+  unitPrice: string;
+  quantity: number;
   currency: string;
   defaultName: string;
   defaultPhone: string;
@@ -19,12 +20,15 @@ interface CheckoutFormProps {
 export function CheckoutForm({
   listingId,
   sellerId,
-  price,
+  unitPrice,
+  quantity,
   currency,
   defaultName,
   defaultPhone,
 }: CheckoutFormProps) {
   const router = useRouter();
+
+  const totalPrice = (parseFloat(unitPrice) * quantity).toFixed(2);
 
   const [name, setName] = useState(defaultName);
   const [address, setAddress] = useState("");
@@ -45,7 +49,7 @@ export function CheckoutForm({
         body: JSON.stringify({
           listing_id: listingId,
           seller_id: sellerId,
-          price,
+          price: totalPrice,
           currency,
           delivery_name: name.trim(),
           delivery_address: address.trim(),
@@ -121,9 +125,9 @@ export function CheckoutForm({
 
           <Button type="submit" disabled={loading} className="w-full py-5 mt-1">
             {loading ? (
-              <><Loader2 className="h-4 w-4 animate-spin mr-2" /> Placing Order…</>
+              <><Loader2 className="h-4 w-4 animate-spin mr-2" /> Placing Order...</>
             ) : (
-              `Confirm Order — ${currency} ${price}`
+              `Confirm Order - ${currency} ${totalPrice}`
             )}
           </Button>
         </CardContent>

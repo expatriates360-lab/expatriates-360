@@ -1,6 +1,7 @@
 ﻿"use client";
 
 import { useState, useRef } from "react";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,6 +15,11 @@ import {
 import { toast } from "sonner";
 import { ImagePlus, X, Loader2, Link2 } from "lucide-react";
 import { LISTING_CATEGORIES, LISTING_CURRENCIES, LOCATIONS } from "@/lib/constants";
+
+const RichTextEditor = dynamic(
+  () => import("@/components/ui/RichTextEditor").then((m) => m.RichTextEditor),
+  { ssr: false, loading: () => <div className="h-[167px] rounded-md border border-input bg-muted/30 animate-pulse" /> }
+);
 
 const CLOUDINARY_CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ?? "";
 const CLOUDINARY_UPLOAD_PRESET = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET ?? "";
@@ -145,7 +151,7 @@ export default function NewListingPage() {
               <label className="text-sm font-medium block mb-1.5">
                 Photos{" "}
                 <span className="text-muted-foreground text-xs font-normal">
-                  (optional â€” up to 8)
+                  (optional - up to 8)
                 </span>
               </label>
               <input
@@ -316,21 +322,19 @@ export default function NewListingPage() {
               <label className="text-sm font-medium block mb-1.5">
                 Description <span className="text-destructive">*</span>
               </label>
-              <textarea
+              <RichTextEditor
                 value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                rows={6}
-                placeholder="Describe your listing in detailâ€¦"
-                className="w-full px-3 py-2 text-sm rounded-md border border-input bg-background focus:outline-none focus:ring-2 focus:ring-ring resize-y"
+                onChange={setDescription}
+                placeholder="Describe your listing in detail..."
               />
             </div>
 
             <div className="flex gap-3 pt-2">
               <Button type="submit" disabled={loading} className="min-w-[140px]">
                 {uploading ? (
-                  <><Loader2 className="h-4 w-4 animate-spin mr-2" /> Uploadingâ€¦</>
+                  <><Loader2 className="h-4 w-4 animate-spin mr-2" /> Uploading...</>
                 ) : loading ? (
-                  "Submittingâ€¦"
+                  "Submitting..."
                 ) : (
                   "Submit Listing"
                 )}

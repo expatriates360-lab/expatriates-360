@@ -68,7 +68,7 @@ export default async function MarketPage({
             </h1>
           </div>
           <p className="text-muted-foreground max-w-xl">
-            Buy, sell, and find services within the expat community — accommodation, vehicles, electronics, and more.
+            Buy, sell, and find services within the expat community - accommodation, vehicles, electronics, and more.
           </p>
 
           {/* Filters */}
@@ -78,7 +78,7 @@ export default async function MarketPage({
               <input
                 name="search"
                 defaultValue={search}
-                placeholder="Search listings…"
+                placeholder="Search listings..."
                 className="w-full px-3 py-2 text-sm rounded-md border border-input bg-background focus:outline-none focus:ring-2 focus:ring-ring"
               />
             </div>

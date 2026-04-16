@@ -5,7 +5,6 @@ import {
   ArrowLeft,
   MapPin,
   Phone,
-  ShoppingBag,
   CalendarDays,
   ExternalLink,
   User,
@@ -18,6 +17,7 @@ import { Separator } from "@/components/ui/separator";
 import { LISTING_CATEGORIES, LISTING_CATEGORY_COLORS } from "@/lib/constants";
 import type { Listing, Profile } from "@/types/database";
 import { ListingGallery } from "@/components/market/ListingGallery";
+import { NativePurchaseSection } from "@/components/market/NativePurchaseSection";
 
 export default async function ListingDetailPage({
   params,
@@ -67,11 +67,6 @@ export default async function ListingDetailPage({
       : listing.image_url
       ? [listing.image_url]
       : [];
-
-  const paragraphs = listing.description
-    .split(/\n{2,}/)
-    .map((p) => p.trim())
-    .filter(Boolean);
 
   const isAffiliate = listing.listing_type === "affiliate";
   const isNative = listing.listing_type === "native";
@@ -150,19 +145,10 @@ export default async function ListingDetailPage({
                   </a>
                 </Button>
               ) : isNative ? (
-                userId ? (
-                  <Button className="w-full py-6" asChild>
-                    <Link href={`/market/checkout?listingId=${listing.id}`}>
-                      Purchase Now
-                    </Link>
-                  </Button>
-                ) : (
-                  <Button className="w-full py-6" asChild>
-                    <Link href={`/sign-in?redirect_url=/market/${listing.id}`}>
-                      Sign in to Purchase
-                    </Link>
-                  </Button>
-                )
+                <NativePurchaseSection
+                  listingId={listing.id}
+                  isSignedIn={!!userId}
+                />
               ) : null}
 
               {/* Contact phone */}
@@ -194,11 +180,10 @@ export default async function ListingDetailPage({
             {/* Description */}
             <div className="space-y-2">
               <h2 className="text-sm font-semibold">Description</h2>
-              <div className="space-y-2">
-                {paragraphs.map((p, i) => (
-                  <p key={i} className="text-sm text-muted-foreground leading-relaxed">{p}</p>
-                ))}
-              </div>
+              <div
+                className="prose prose-sm max-w-none dark:prose-invert text-muted-foreground"
+                dangerouslySetInnerHTML={{ __html: listing.description }}
+              />
             </div>
 
             <Button variant="ghost" size="sm" className="w-full" asChild>

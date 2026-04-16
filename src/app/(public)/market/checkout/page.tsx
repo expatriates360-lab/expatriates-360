@@ -10,7 +10,7 @@ export const dynamic = "force-dynamic";
 export default async function CheckoutPage({
   searchParams,
 }: {
-  searchParams: Promise<{ listingId?: string }>;
+  searchParams: Promise<{ listingId?: string; qty?: string }>;
 }) {
   const { userId } = await auth();
   if (!userId) redirect("/sign-in");
@@ -18,6 +18,9 @@ export default async function CheckoutPage({
   const sp = await searchParams;
   const listingId = sp.listingId;
   if (!listingId) notFound();
+
+  const rawQty = parseInt(sp.qty ?? "1", 10);
+  const qty = Number.isFinite(rawQty) && rawQty > 0 ? rawQty : 1;
 
   const supabase = createAdminClient();
 
@@ -80,27 +83,36 @@ export default async function CheckoutPage({
 
               <div className="border-t border-border pt-4 space-y-1.5 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Price</span>
+                  <span className="text-muted-foreground">Unit Price</span>
                   <span className="font-medium">{listing.currency} {listing.price}</span>
                 </div>
+                {qty > 1 && (
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Quantity</span>
+                    <span className="font-medium">x{qty}</span>
+                  </div>
+                )}
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Payment</span>
                   <span className="font-medium">Cash on Delivery</span>
                 </div>
                 <div className="flex justify-between font-semibold text-base pt-1 border-t border-border">
                   <span>Total</span>
-                  <span className="text-primary">{listing.currency} {listing.price}</span>
+                  <span className="text-primary">
+                    {listing.currency} {(parseFloat(listing.price) * qty).toFixed(2)}
+                  </span>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* ── Delivery form (right) ── */}
+          {/* Delivery form (right) */}
           <div className="lg:col-span-3">
             <CheckoutForm
               listingId={listing.id}
               sellerId={listing.seller_id}
-              price={listing.price}
+              unitPrice={listing.price}
+              quantity={qty}
               currency={listing.currency ?? "USD"}
               defaultName={profile?.full_name ?? ""}
               defaultPhone={profile?.phone ?? ""}

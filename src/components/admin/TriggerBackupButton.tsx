@@ -11,7 +11,7 @@ export function TriggerBackupButton() {
 
   function handleClick() {
     startTransition(async () => {
-      const toastId = toast.loading("Running backup — this may take a moment…");
+      const toastId = toast.loading("Running backup - this may take a moment...");
       try {
         const result = await triggerManualBackup();
         if (result.success) {
@@ -40,7 +40,7 @@ export function TriggerBackupButton() {
       ) : (
         <DatabaseBackup className="h-4 w-4" />
       )}
-      {isPending ? "Generating…" : "Generate Manual Backup"}
+      {isPending ? "Generating..." : "Generate Manual Backup"}
     </Button>
   );
 }
