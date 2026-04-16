@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { User, Upload, X, Loader2, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { uploadToCloudinary } from "@/lib/cloudinary";
@@ -178,7 +177,7 @@ export function ProfileEditForm({ initialProfile }: { initialProfile: Profile })
           Personal Info
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Field label="Full Name" className="col-span-2">
+          <Field label="Full Name" className="col-span-full">
             <Input
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
@@ -318,14 +317,14 @@ export function ProfileEditForm({ initialProfile }: { initialProfile: Profile })
             Company Info
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Field label="Company CR Number" className="col-span-2">
+            <Field label="Company CR Number" className="col-span-full">
               <Input
                 value={companyCr}
                 onChange={(e) => setCompanyCr(e.target.value)}
                 placeholder="e.g. 1010123456"
               />
             </Field>
-            <Field label="Company Website" className="col-span-2">
+            <Field label="Company Website" className="col-span-full">
               <Input
                 type="url"
                 value={companyWebsite}
@@ -333,7 +332,7 @@ export function ProfileEditForm({ initialProfile }: { initialProfile: Profile })
                 placeholder="https://company.com"
               />
             </Field>
-            <Field label="Company Address" className="col-span-2">
+            <Field label="Company Address" className="col-span-full">
               <Input
                 value={companyAddress}
                 onChange={(e) => setCompanyAddress(e.target.value)}
@@ -372,9 +371,9 @@ function Field({
 }) {
   return (
     <div className={cn("flex flex-col gap-1.5", className)}>
-      <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide leading-normal">
+      <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
         {label}
-      </Label>
+      </p>
       {children}
     </div>
   );

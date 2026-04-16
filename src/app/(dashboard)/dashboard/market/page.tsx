@@ -74,7 +74,7 @@ export default async function MyListingsPage() {
             return (
               <Card key={listing.id} className="hover:border-primary/30 transition-colors overflow-hidden">
                 <CardContent className="pt-0 pb-0">
-                  <div className="flex items-start gap-4 py-4">
+                  <div className="flex gap-4 py-4">
                     {listing.image_url ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
@@ -87,29 +87,32 @@ export default async function MyListingsPage() {
                         <ShoppingBag className="h-6 w-6 text-muted-foreground/40" />
                       </div>
                     )}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <Badge className={`text-xs border-0 ${catColor}`}>{catLabel}</Badge>
-                        <Badge className={`text-xs border ${STATUS_COLORS[listing.status] ?? ""}`}>
-                          {listing.status}
-                        </Badge>
+                    {/* Right side: text on top, buttons below on mobile; side-by-side on sm+ */}
+                    <div className="flex-1 min-w-0 flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2 mb-1 flex-wrap">
+                          <Badge className={`text-xs border-0 ${catColor}`}>{catLabel}</Badge>
+                          <Badge className={`text-xs border ${STATUS_COLORS[listing.status] ?? ""}`}>
+                            {listing.status}
+                          </Badge>
+                        </div>
+                        <p className="font-medium text-sm line-clamp-1">{listing.title}</p>
+                        <p className="text-xs text-primary font-semibold mt-0.5">
+                          {listing.currency} {listing.price}
+                        </p>
                       </div>
-                      <p className="font-medium text-sm line-clamp-1">{listing.title}</p>
-                      <p className="text-xs text-primary font-semibold mt-0.5">
-                        {listing.currency} {listing.price}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-1.5 shrink-0">
-                      <Button size="sm" variant="outline" className="h-7 text-xs gap-1" asChild>
-                        <Link href={`/dashboard/market/${listing.id}/edit`}>
-                          <Pencil className="h-3 w-3" /> Edit
-                        </Link>
-                      </Button>
-                      {listing.status === "approved" && (
-                        <Button size="sm" variant="outline" className="h-7 text-xs" asChild>
-                          <Link href={`/market/${listing.id}`} target="_blank">View</Link>
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        <Button size="sm" variant="outline" className="h-7 text-xs gap-1" asChild>
+                          <Link href={`/dashboard/market/${listing.id}/edit`}>
+                            <Pencil className="h-3 w-3" /> Edit
+                          </Link>
                         </Button>
-                      )}
+                        {listing.status === "approved" && (
+                          <Button size="sm" variant="outline" className="h-7 text-xs" asChild>
+                            <Link href={`/market/${listing.id}`} target="_blank">View</Link>
+                          </Button>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </CardContent>
