@@ -84,7 +84,7 @@ export function Footer() {
 
         <Separator className="my-8" />  
 
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted-foreground  pt-6 mt-8">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted-foreground ">
           <div className="flex flex-col sm:flex-row items-center gap-2 w-full justify-between">
             <span>© {new Date().getFullYear()} Expatriates 360. All rights reserved.</span>
             
