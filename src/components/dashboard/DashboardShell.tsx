@@ -278,7 +278,7 @@ export function DashboardShell({ role, fullName, children }: DashboardShellProps
   const navItems = getNavItems(role);
 
   return (
-    <div className="flex min-h-screen bg-muted/30">
+    <div className="flex min-h-screen bg-muted/30 overflow-x-hidden w-full max-w-[100vw]">
       {/* Desktop sidebar */}
       <aside className="hidden lg:flex flex-col w-[240px] shrink-0 bg-card border-r border-border fixed inset-y-0 left-0 z-30">
         <SidebarContent
@@ -314,7 +314,7 @@ export function DashboardShell({ role, fullName, children }: DashboardShellProps
       </aside>
 
       {/* Main content */}
-      <div className="flex-1 lg:ml-[240px] flex flex-col min-h-screen">
+      <div className="flex-1 lg:ml-[240px] flex flex-col min-h-screen min-w-0 overflow-x-hidden w-full">
         {/* Mobile top bar */}
         <header className="lg:hidden sticky top-0 z-30 flex items-center gap-3 px-4 h-14 bg-card/80 backdrop-blur border-b border-border">
           <button

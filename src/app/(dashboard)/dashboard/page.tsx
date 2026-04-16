@@ -170,7 +170,7 @@ function SeekerDashboard({
     <div className="space-y-8 w-full max-w-7xl mx-auto">
       {/* Greeting */}
       <div className="flex items-start justify-between gap-4 flex-wrap">
-        <div>
+        <div className="min-w-0 flex-1">
           <p className="text-sm text-muted-foreground mb-1">Good day,</p>
           <h1 className="text-3xl font-bold tracking-tight">
             <span className="bg-gradient-to-r from-primary to-blue-500 bg-clip-text text-transparent">
@@ -306,7 +306,7 @@ function EmployerDashboard({
     <div className="space-y-8 w-full max-w-7xl mx-auto">
       {/* Greeting */}
       <div className="flex items-start justify-between gap-4 flex-wrap">
-        <div>
+        <div className="min-w-0 flex-1">
           <p className="text-sm text-muted-foreground mb-1">Good day,</p>
           <h1 className="text-3xl font-bold tracking-tight">
             <span className="bg-gradient-to-r from-primary to-blue-500 bg-clip-text text-transparent">

@@ -136,7 +136,7 @@ export function ProfileEditForm({ initialProfile }: { initialProfile: Profile })
                 setAvatarPreview("");
                 setAvatarFile(null);
               }}
-              className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-destructive text-white flex items-center justify-center cursor-pointer "
+              className="absolute top-0 right-0 translate-x-1/3 -translate-y-1/3 h-5 w-5 rounded-full bg-destructive text-white flex items-center justify-center cursor-pointer "
               aria-label="Remove photo"
             >
               <X className="h-3 w-3" />
@@ -371,8 +371,8 @@ function Field({
   className?: string;
 }) {
   return (
-    <div className={cn("space-y-1.5", className)}>
-      <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+    <div className={cn("flex flex-col gap-1.5", className)}>
+      <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide leading-normal">
         {label}
       </Label>
       {children}
