@@ -278,16 +278,19 @@ export interface Database {
           id: number;
           auto_approve_market_listings: boolean;
           auto_approve_articles: boolean;
+          auto_approve_jobs: boolean;
         };
         Insert: {
           id?: number;
           auto_approve_market_listings?: boolean;
           auto_approve_articles?: boolean;
+          auto_approve_jobs?: boolean;
         };
         Update: {
           id?: number;
           auto_approve_market_listings?: boolean;
           auto_approve_articles?: boolean;
+          auto_approve_jobs?: boolean;
         };
         Relationships: [];
       };
