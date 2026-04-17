@@ -68,9 +68,20 @@ export async function PATCH(
     if (key in body) (updateData as Record<string, unknown>)[key] = body[key as string];
   }
 
-  // Admin can change status; employer can only change non-status fields
-  if (profile?.role !== "admin" && "status" in updateData) {
-    delete updateData["status"];
+  // Admin can change status freely; employers can only set 'closed'
+  if (profile?.role !== "admin") {
+    if ("status" in updateData && updateData.status !== "closed") {
+      delete updateData["status"];
+    }
+    // When employer edits actual job fields, reset status based on auto-approve
+    const hasFieldEdits = Object.keys(updateData).some((k) => k !== "status");
+    if (hasFieldEdits) {
+      const { data: settings } = await supabase
+        .from("site_settings")
+        .select("auto_approve_jobs")
+        .single();
+      updateData.status = settings?.auto_approve_jobs ? "approved" : "pending";
+    }
   }
 
   const { error } = await supabase

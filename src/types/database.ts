@@ -7,13 +7,19 @@ export type Json =
   | Json[];
 
 export type UserRole = "admin" | "employer" | "seeker";
-export type JobStatus = "pending" | "approved" | "rejected" | "draft";
+export type JobStatus = "pending" | "approved" | "rejected" | "draft" | "closed";
 export type ArticleStatus = "pending" | "approved";
 export type ArticleCategory = "safety_hse" | "engineering" | "career_tips";
 export type ListingStatus = "pending" | "approved" | "rejected";
 export type ListingCategory = "accommodation" | "vehicles" | "electronics" | "services" | "other";
 export type OrderStatus = "pending" | "completed" | "cancelled";
 export type AdType = "adsense" | "custom";
+
+export interface SiteSettings {
+  id: number;
+  auto_approve_jobs: boolean;
+  updated_at: string;
+}
 
 export interface Database {
   public: {

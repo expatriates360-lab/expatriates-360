@@ -18,6 +18,7 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { JOB_CATEGORIES, LOCATIONS, DURATIONS, SALARY_TYPES } from "@/lib/constants";
 import type { OfficeLocation } from "@/components/jobs/OfficeLocationPicker";
+import type { Job } from "@/types/database";
 import Link from "next/link";
 
 const OfficeLocationPicker = dynamic(
@@ -44,26 +45,38 @@ interface JobForm {
   companyAddress: string;
 }
 
-export default function PostJobPage() {
+function jobToForm(job: Job): JobForm {
+  return {
+    jobTitle: job.job_title,
+    jobDescription: job.job_description,
+    positions: job.positions != null ? String(job.positions) : "",
+    location: job.location,
+    duration: job.duration,
+    salaryType: job.salary_type ?? "",
+    salaryRate: job.salary_rate ?? "",
+    category: job.category,
+    subcategory: job.subcategory ?? "",
+    companyName: job.company_name,
+    companyPhone: job.company_phone ?? "",
+    companyEmail: job.company_email ?? "",
+    companyAddress: job.company_address ?? "",
+  };
+}
+
+export function EditJobForm({ job }: { job: Job }) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const [officeLocation, setOfficeLocation] = useState<OfficeLocation | null>(null);
+  const [officeLocation, setOfficeLocation] = useState<OfficeLocation | null>(
+    job.office_lat != null && job.office_lng != null
+      ? {
+          lat: job.office_lat,
+          lng: job.office_lng,
+          address: job.office_address ?? "",
+        }
+      : null
+  );
 
-  const [form, setForm] = useState<JobForm>({
-    jobTitle: "",
-    jobDescription: "",
-    positions: "",
-    location: "",
-    duration: "",
-    salaryType: "",
-    salaryRate: "",
-    category: "",
-    subcategory: "",
-    companyName: "",
-    companyPhone: "",
-    companyEmail: "",
-    companyAddress: "",
-  });
+  const [form, setForm] = useState<JobForm>(jobToForm(job));
 
   const set = (field: keyof JobForm, value: string) =>
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -97,37 +110,35 @@ export default function PostJobPage() {
 
     setIsLoading(true);
     try {
-      const res = await fetch("/api/jobs", {
-        method: "POST",
+      const res = await fetch(`/api/jobs/${job.id}`, {
+        method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          jobTitle: form.jobTitle.trim(),
-          jobDescription: form.jobDescription.trim(),
+          job_title: form.jobTitle.trim(),
+          job_description: form.jobDescription.trim(),
           positions: positionsNum,
           location: form.location,
           duration: form.duration,
-          salaryType: form.salaryType,
-          salaryRate: salaryAmountRequired ? form.salaryRate.trim() : null,
+          salary_type: form.salaryType,
+          salary_rate: salaryAmountRequired ? form.salaryRate.trim() : null,
           category: form.category,
           subcategory: form.subcategory.trim() || null,
-          companyName: form.companyName.trim(),
-          companyPhone: form.companyPhone.trim(),
-          companyEmail: form.companyEmail.trim() || null,
-          companyAddress: form.companyAddress.trim() || null,
-          officeLat: officeLocation?.lat ?? null,
-          officeLng: officeLocation?.lng ?? null,
-          officeAddress: officeLocation?.address ?? null,
+          company_name: form.companyName.trim(),
+          company_phone: form.companyPhone.trim(),
+          company_email: form.companyEmail.trim() || null,
+          company_address: form.companyAddress.trim() || null,
+          office_lat: officeLocation?.lat ?? null,
+          office_lng: officeLocation?.lng ?? null,
+          office_address: officeLocation?.address ?? null,
         }),
       });
 
       if (!res.ok) {
         const data = (await res.json()) as { error?: string };
-        throw new Error(data.error ?? "Failed to post job");
+        throw new Error(data.error ?? "Failed to update job");
       }
 
-      toast.success(
-        "Job submitted for review! It will appear publicly once approved."
-      );
+      toast.success("Job updated. It will be reviewed before going live again.");
       router.push("/dashboard/jobs");
     } catch (err: unknown) {
       toast.error((err as Error)?.message ?? "Something went wrong.");
@@ -145,9 +156,9 @@ export default function PostJobPage() {
           </Link>
         </Button>
         <div>
-          <h1 className="text-2xl font-bold">Post a Job</h1>
+          <h1 className="text-2xl font-bold">Edit Job</h1>
           <p className="text-muted-foreground text-sm mt-0.5">
-            Your post will be reviewed before going live.
+            Changes will be reviewed before going live again.
           </p>
         </div>
       </div>
@@ -323,7 +334,7 @@ export default function PostJobPage() {
           </div>
         </Section>
 
-        {/* Office Location / Map */}
+        {/* Office Location */}
         <Section title="Office Location (Optional)">
           <p className="text-xs text-muted-foreground -mt-1">
             Search for an address or click the map to pin the exact office location.
@@ -347,7 +358,7 @@ export default function PostJobPage() {
 
         <Button type="submit" className="h-11 w-full sm:w-auto" disabled={isLoading}>
           {isLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
-          Submit for Review
+          Save Changes
         </Button>
       </form>
     </div>

@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { JobModerationActions } from "@/components/admin/JobModerationActions";
+import { AutoApproveJobsToggle } from "@/components/admin/AutoApproveJobsToggle";
 
 export const dynamic = "force-dynamic";
 
@@ -90,12 +91,27 @@ export default async function AdminJobsPage({
     { label: "All", value: "all", count: pendingCount + approvedCount + rejectedCount },
   ];
 
+  // Fetch site_settings for auto-approve toggle
+  let autoApproveJobs = false;
+  try {
+    const { data: settings } = await supabase
+      .from("site_settings")
+      .select("auto_approve_jobs")
+      .single();
+    autoApproveJobs = settings?.auto_approve_jobs ?? false;
+  } catch {
+    // ignore — default to false
+  }
+
   return (
     <div className="max-w-6xl mx-auto px-4 py-8 space-y-6">
       <div>
         <h1 className="text-2xl font-bold">Job Queue</h1>
         <p className="text-sm text-muted-foreground">Review and moderate job postings</p>
       </div>
+
+      {/* Auto-approve toggle */}
+      <AutoApproveJobsToggle initialValue={autoApproveJobs} />
 
       {/* Status tabs */}
       <div className="flex gap-2 flex-wrap">

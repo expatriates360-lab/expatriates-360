@@ -86,6 +86,13 @@ export async function POST(req: Request) {
   if (!SALARY_TYPES.includes(body.salaryType as (typeof SALARY_TYPES)[number])) return NextResponse.json({ error: "Invalid salary type" }, { status: 400 });
   if (body.positions != null && (typeof body.positions !== "number" || body.positions < 1)) return NextResponse.json({ error: "Invalid positions count" }, { status: 400 });
 
+  // Check auto-approve setting
+  const { data: settings } = await supabase
+    .from("site_settings")
+    .select("auto_approve_jobs")
+    .single();
+  const jobStatus = settings?.auto_approve_jobs ? "approved" : "pending";
+
   const { data, error } = await supabase
     .from("jobs")
     .insert({
@@ -106,7 +113,7 @@ export async function POST(req: Request) {
       office_lat: body.officeLat ?? null,
       office_lng: body.officeLng ?? null,
       office_address: body.officeAddress ?? null,
-      status: "pending",
+      status: jobStatus,
     })
     .select("id")
     .single();

@@ -44,7 +44,7 @@ export async function PATCH(req: Request) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
-  const body: { auto_approve_market_listings?: boolean; auto_approve_articles?: boolean } = await req.json();
+  const body: { auto_approve_market_listings?: boolean; auto_approve_articles?: boolean; auto_approve_jobs?: boolean } = await req.json();
 
   // Upsert — always update row with id = 1
   const { data, error } = await supabase
