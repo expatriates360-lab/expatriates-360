@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Briefcase } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { JobModerationActions } from "@/components/admin/JobModerationActions";
 import { AutoApproveJobsToggle } from "@/components/admin/AutoApproveJobsToggle";
 
@@ -116,17 +116,17 @@ export default async function AdminJobsPage({
       {/* Status tabs */}
       <div className="flex gap-2 flex-wrap">
         {STATUS_TABS.map((tab) => (
-          <Button
+          <Link
             key={tab.value}
-            variant={statusFilter === tab.value ? "default" : "outline"}
-            size="sm"
-            asChild
+            href={`/dashboard/admin/jobs?status=${tab.value}`}
+            className={buttonVariants({
+              variant: statusFilter === tab.value ? "default" : "outline",
+              size: "sm",
+            })}
           >
-            <Link href={`/dashboard/admin/jobs?status=${tab.value}`}>
-              {tab.label}
-              <span className="ml-1.5 text-xs opacity-70">({tab.count})</span>
-            </Link>
-          </Button>
+            {tab.label}
+            <span className="ml-1.5 text-xs opacity-70">({tab.count})</span>
+          </Link>
         ))}
       </div>
 
@@ -203,25 +203,23 @@ export default async function AdminJobsPage({
       {totalPages > 1 && (
         <div className="flex items-center justify-center gap-2">
           {page > 1 && (
-            <Button variant="outline" size="sm" asChild>
-              <Link
-                href={`/dashboard/admin/jobs?status=${statusFilter}&page=${page - 1}`}
-              >
-                Previous
-              </Link>
-            </Button>
+            <Link
+              href={`/dashboard/admin/jobs?status=${statusFilter}&page=${page - 1}`}
+              className={buttonVariants({ variant: "outline", size: "sm" })}
+            >
+              Previous
+            </Link>
           )}
           <span className="text-sm text-muted-foreground">
             Page {page} of {totalPages}
           </span>
           {page < totalPages && (
-            <Button variant="outline" size="sm" asChild>
-              <Link
-                href={`/dashboard/admin/jobs?status=${statusFilter}&page=${page + 1}`}
-              >
-                Next
-              </Link>
-            </Button>
+            <Link
+              href={`/dashboard/admin/jobs?status=${statusFilter}&page=${page + 1}`}
+              className={buttonVariants({ variant: "outline", size: "sm" })}
+            >
+              Next
+            </Link>
           )}
         </div>
       )}

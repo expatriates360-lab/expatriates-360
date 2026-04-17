@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Search, Users } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { UserRowActions } from "@/components/admin/UserRowActions";
 import type { Profile } from "@/types/database";
 
@@ -111,9 +111,12 @@ export default async function AdminUsersPage({
             </div>
             <Button type="submit" size="sm">Filter</Button>
             {(search || roleFilter) && (
-              <Button variant="ghost" size="sm" asChild>
-                <Link href="/dashboard/admin/users">Clear</Link>
-              </Button>
+              <Link
+                href="/dashboard/admin/users"
+                className={buttonVariants({ variant: "ghost", size: "sm" })}
+              >
+                Clear
+              </Link>
             )}
           </form>
         </CardContent>
@@ -179,21 +182,23 @@ export default async function AdminUsersPage({
       {totalPages > 1 && (
         <div className="flex items-center justify-center gap-2">
           {page > 1 && (
-            <Button variant="outline" size="sm" asChild>
-              <Link href={`/dashboard/admin/users?${buildParams({ search, role: roleFilter, page: page - 1 })}`}>
-                Previous
-              </Link>
-            </Button>
+            <Link
+              href={`/dashboard/admin/users?${buildParams({ search, role: roleFilter, page: page - 1 })}`}
+              className={buttonVariants({ variant: "outline", size: "sm" })}
+            >
+              Previous
+            </Link>
           )}
           <span className="text-sm text-muted-foreground">
             Page {page} of {totalPages}
           </span>
           {page < totalPages && (
-            <Button variant="outline" size="sm" asChild>
-              <Link href={`/dashboard/admin/users?${buildParams({ search, role: roleFilter, page: page + 1 })}`}>
-                Next
-              </Link>
-            </Button>
+            <Link
+              href={`/dashboard/admin/users?${buildParams({ search, role: roleFilter, page: page + 1 })}`}
+              className={buttonVariants({ variant: "outline", size: "sm" })}
+            >
+              Next
+            </Link>
           )}
         </div>
       )}
