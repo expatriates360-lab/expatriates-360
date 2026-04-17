@@ -37,14 +37,17 @@ export const LOCATIONS = [
 export type Location = (typeof LOCATIONS)[number];
 
 export const DURATIONS = [
-  "3 months",
-  "6 months",
-  "12 months",
-  "18 months",
-  "24 months",
-  "36 months",
+  "1 Month",
+  "3 Months",
+  "6 Months",
+  "12 Months",
+  "24 Months",
+  "Long Term",
   "Permanent",
 ] as const;
+
+export const SALARY_TYPES = ["Hourly", "Monthly", "After Interview"] as const;
+export type SalaryType = (typeof SALARY_TYPES)[number];
 
 export const PROFESSIONS = [
   "HSE Engineer",

@@ -1,21 +1,25 @@
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { createAdminClient } from "@/lib/supabase";
-import { JOB_CATEGORIES, LOCATIONS, DURATIONS } from "@/lib/constants";
+import { JOB_CATEGORIES, LOCATIONS, DURATIONS, SALARY_TYPES } from "@/lib/constants";
 
 interface PostJobBody {
   jobTitle: string;
   jobDescription: string;
-  positions: number;
+  positions?: number | null;
   location: string;
   duration: string;
-  salaryRate: string;
+  salaryType: string;
+  salaryRate?: string | null;
   category: string;
   subcategory?: string | null;
   companyName: string;
-  companyPhone?: string | null;
+  companyPhone: string;
   companyEmail?: string | null;
   companyAddress?: string | null;
+  officeLat?: number | null;
+  officeLng?: number | null;
+  officeAddress?: string | null;
 }
 
 /* ── GET: list approved jobs (public) ─────────────────────── */
@@ -75,10 +79,12 @@ export async function POST(req: Request) {
   if (!body.jobTitle?.trim()) return NextResponse.json({ error: "Job title is required" }, { status: 400 });
   if (!body.jobDescription?.trim()) return NextResponse.json({ error: "Job description is required" }, { status: 400 });
   if (!body.companyName?.trim()) return NextResponse.json({ error: "Company name is required" }, { status: 400 });
-  if (typeof body.positions !== "number" || body.positions < 1) return NextResponse.json({ error: "Invalid positions count" }, { status: 400 });
+  if (!body.companyPhone?.trim()) return NextResponse.json({ error: "Company phone is required" }, { status: 400 });
   if (!LOCATIONS.includes(body.location as (typeof LOCATIONS)[number])) return NextResponse.json({ error: "Invalid location" }, { status: 400 });
   if (!DURATIONS.includes(body.duration as (typeof DURATIONS)[number])) return NextResponse.json({ error: "Invalid duration" }, { status: 400 });
   if (!JOB_CATEGORIES.includes(body.category as (typeof JOB_CATEGORIES)[number])) return NextResponse.json({ error: "Invalid category" }, { status: 400 });
+  if (!SALARY_TYPES.includes(body.salaryType as (typeof SALARY_TYPES)[number])) return NextResponse.json({ error: "Invalid salary type" }, { status: 400 });
+  if (body.positions != null && (typeof body.positions !== "number" || body.positions < 1)) return NextResponse.json({ error: "Invalid positions count" }, { status: 400 });
 
   const { data, error } = await supabase
     .from("jobs")
@@ -86,16 +92,20 @@ export async function POST(req: Request) {
       employer_id: userId,
       job_title: body.jobTitle.trim(),
       job_description: body.jobDescription.trim(),
-      positions: body.positions,
+      positions: body.positions ?? null,
       location: body.location,
       duration: body.duration,
-      salary_rate: body.salaryRate.trim(),
+      salary_type: body.salaryType,
+      salary_rate: body.salaryRate?.trim() ?? null,
       category: body.category,
       subcategory: body.subcategory ?? null,
       company_name: body.companyName.trim(),
-      company_phone: body.companyPhone ?? null,
+      company_phone: body.companyPhone.trim(),
       company_email: body.companyEmail ?? null,
       company_address: body.companyAddress ?? null,
+      office_lat: body.officeLat ?? null,
+      office_lng: body.officeLng ?? null,
+      office_address: body.officeAddress ?? null,
       status: "pending",
     })
     .select("id")

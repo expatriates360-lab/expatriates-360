@@ -12,6 +12,7 @@ import {
   ArrowLeft,
   Calendar,
   Tag,
+  Banknote,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -49,6 +50,15 @@ export default async function JobDetailPage({
     year: "numeric",
   });
 
+  const salaryLabel =
+    job.salary_type === "After Interview"
+      ? "To be discussed"
+      : job.salary_rate
+      ? `${job.salary_rate} (${job.salary_type ?? ""})`
+      : (job.salary_type ?? "Not specified");
+
+  const hasMap = job.office_lat != null && job.office_lng != null;
+
   return (
     <div className="min-h-screen py-10">
       <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
@@ -84,13 +94,21 @@ export default async function JobDetailPage({
 
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-5">
                   <Stat icon={<MapPin className="h-4 w-4" />} label="Location" value={job.location} />
-                  <Stat icon={<DollarSign className="h-4 w-4" />} label="Salary" value={job.salary_rate} />
+                  <Stat icon={<DollarSign className="h-4 w-4" />} label="Salary" value={salaryLabel} />
                   <Stat icon={<Clock className="h-4 w-4" />} label="Duration" value={job.duration} />
-                  <Stat
-                    icon={<Users className="h-4 w-4" />}
-                    label="Positions"
-                    value={`${job.positions} open`}
-                  />
+                  {job.positions != null ? (
+                    <Stat
+                      icon={<Users className="h-4 w-4" />}
+                      label="Positions"
+                      value={`${job.positions} open`}
+                    />
+                  ) : (
+                    <Stat
+                      icon={<Users className="h-4 w-4" />}
+                      label="Positions"
+                      value="Not specified"
+                    />
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -104,6 +122,32 @@ export default async function JobDetailPage({
                 </div>
               </CardContent>
             </Card>
+
+            {/* Office location map */}
+            {hasMap && (
+              <Card>
+                <CardContent className="pt-6 pb-5">
+                  <h2 className="text-base font-semibold mb-3 flex items-center gap-2">
+                    <MapPin className="h-4 w-4 text-muted-foreground" />
+                    Office Location
+                  </h2>
+                  {job.office_address && (
+                    <p className="text-sm text-muted-foreground mb-3">{job.office_address}</p>
+                  )}
+                  <div className="rounded-lg overflow-hidden border border-border">
+                    <iframe
+                      title="Office Location"
+                      width="100%"
+                      height="300"
+                      loading="lazy"
+                      referrerPolicy="no-referrer-when-downgrade"
+                      src={`https://maps.google.com/maps?q=${job.office_lat},${job.office_lng}&z=15&output=embed`}
+                      className="block"
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           </div>
 
           {/* Sidebar */}
@@ -117,7 +161,21 @@ export default async function JobDetailPage({
                   <Detail icon={<Tag className="h-4 w-4" />} label="Subcategory" value={job.subcategory} />
                 )}
                 <Detail icon={<Calendar className="h-4 w-4" />} label="Posted" value={postedOn} />
-                <Detail icon={<Users className="h-4 w-4" />} label="Positions" value={job.positions.toString()} />
+                <Detail icon={<Clock className="h-4 w-4" />} label="Duration" value={job.duration} />
+                {job.salary_type && (
+                  <Detail
+                    icon={<Banknote className="h-4 w-4" />}
+                    label="Salary Type"
+                    value={job.salary_type}
+                  />
+                )}
+                {job.positions != null && (
+                  <Detail
+                    icon={<Users className="h-4 w-4" />}
+                    label="Positions"
+                    value={job.positions.toString()}
+                  />
+                )}
               </CardContent>
             </Card>
 
