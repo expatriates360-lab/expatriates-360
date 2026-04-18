@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Pencil, Archive, Loader2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -52,29 +52,27 @@ export function JobRowActions({ jobId, jobStatus }: JobRowActionsProps) {
   return (
     <div className="flex items-center gap-1">
       {/* Edit */}
-      <Button variant="ghost" size="icon" className="h-8 w-8" asChild>
-        <Link href={`/dashboard/jobs/${jobId}/edit`} aria-label="Edit job">
-          <Pencil className="h-4 w-4" />
-        </Link>
-      </Button>
+      <Link
+        href={`/dashboard/jobs/${jobId}/edit`}
+        aria-label="Edit job"
+        className={buttonVariants({ variant: "ghost", size: "icon" })}
+      >
+        <Pencil className="h-4 w-4" />
+      </Link>
 
       {/* Close / Mark as Filled */}
       {!isClosed && (
         <AlertDialog>
-          <AlertDialogTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 text-muted-foreground hover:text-amber-600"
-              aria-label="Close job"
-              disabled={isClosing}
-            >
-              {isClosing ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <Archive className="h-4 w-4" />
-              )}
-            </Button>
+          <AlertDialogTrigger
+            className={buttonVariants({ variant: "ghost", size: "icon" }) + " text-muted-foreground hover:text-amber-600"}
+            aria-label="Close job"
+            disabled={isClosing}
+          >
+            {isClosing ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Archive className="h-4 w-4" />
+            )}
           </AlertDialogTrigger>
           <AlertDialogContent>
             <AlertDialogHeader>
