@@ -183,7 +183,6 @@ export function EditJobForm({ job }: { job: Job }) {
             />
           </Field>
 
-          {/* Row 1: Category & Subcategory */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Field label="Category *">
               <Select
@@ -208,10 +207,7 @@ export function EditJobForm({ job }: { job: Job }) {
                 onChange={(e) => set("subcategory", e.target.value)}
               />
             </Field>
-          </div>
 
-          {/* Row 2: Location & Duration */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Field label="Location *">
               <Select
                 value={form.location}
@@ -226,6 +222,17 @@ export function EditJobForm({ job }: { job: Job }) {
                   ))}
                 </SelectContent>
               </Select>
+            </Field>
+
+            <Field label="Number of Positions (Optional)">
+              <Input
+                type="number"
+                min="1"
+                max="999"
+                placeholder="e.g. 3"
+                value={form.positions}
+                onChange={(e) => set("positions", e.target.value)}
+              />
             </Field>
 
             <Field label="Duration *">
@@ -243,10 +250,7 @@ export function EditJobForm({ job }: { job: Job }) {
                 </SelectContent>
               </Select>
             </Field>
-          </div>
 
-          {/* Row 3: Salary Type & Salary/Rate */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Field label="Salary Type *">
               <Select
                 value={form.salaryType}
@@ -281,20 +285,6 @@ export function EditJobForm({ job }: { job: Job }) {
                 />
               </Field>
             )}
-          </div>
-
-          {/* Row 4: Number of Positions (full width) */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <Field label="Number of Positions (Optional)" className="sm:col-span-2">
-              <Input
-                type="number"
-                min="1"
-                max="999"
-                placeholder="e.g. 3"
-                value={form.positions}
-                onChange={(e) => set("positions", e.target.value)}
-              />
-            </Field>
           </div>
         </Section>
 
