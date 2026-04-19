@@ -14,6 +14,7 @@ const isPublicRoute = createRouteMatcher([
   "/sign-in(.*)",
   "/register(.*)",
   "/api/webhooks(.*)", // Clerk webhook must be public
+  "/api/cron(.*)",    // Cron jobs use CRON_SECRET bearer token, not Clerk session
 ]);
 
 export default clerkMiddleware(async (auth, req) => {
