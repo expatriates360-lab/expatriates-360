@@ -3,8 +3,4 @@
   publish = ".next"
 
 [functions]
-  # Increase timeout for all serverless functions (max 26s on free plan)
   node_bundler = "nft"
-
-[[plugins]]
-  package = "@netlify/plugin-nextjs"
