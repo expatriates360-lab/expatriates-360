@@ -129,19 +129,7 @@ export default async function AdminBackupsPage() {
         </div>
       )}
 
-      {/* Cron setup guide */}
-      <div className="rounded-xl border bg-muted/30 p-4 space-y-2">
-        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-          Monthly Automation Endpoint
-        </p>
-        <code className="block text-xs bg-muted rounded px-2 py-1.5 break-all">
-          POST /api/cron/backup
-          {" — "}Authorization: Bearer {"<CRON_SECRET>"}
-        </code>
-        <p className="text-xs text-muted-foreground">
-          Use GitHub Actions, Vercel Cron, or any web cron service to hit this endpoint on the 1st of every month.
-        </p>
-      </div>
+      
     </div>
   );
 }

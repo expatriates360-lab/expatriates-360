@@ -32,5 +32,6 @@ export async function POST(request: NextRequest) {
     ok: true,
     fileName: result.fileName,
     signedUrl: result.signedUrl,
+    emailStatus: result.emailError ? `FAILED: ${result.emailError}` : "sent",
   });
 }

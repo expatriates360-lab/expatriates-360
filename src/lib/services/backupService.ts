@@ -11,6 +11,7 @@ export interface BackupResult {
   fileName: string;
   signedUrl?: string;
   error?: string;
+  emailError?: string;
 }
 
 export interface BackupFile {
@@ -93,9 +94,14 @@ export async function runBackup(): Promise<BackupResult> {
     const signedUrl = urlData?.signedUrl;
 
     // ── 5. Send notification email ────────────────────────────────────────────
-    await sendBackupEmail(fileName, signedUrl, buffer);
+    let emailError: string | undefined;
+    try {
+      await sendBackupEmail(fileName, signedUrl, buffer);
+    } catch (emailErr) {
+      emailError = emailErr instanceof Error ? emailErr.message : String(emailErr);
+    }
 
-    return { success: true, fileName, signedUrl };
+    return { success: true, fileName, signedUrl, emailError };
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     console.error("[backupService] Error:", message);
