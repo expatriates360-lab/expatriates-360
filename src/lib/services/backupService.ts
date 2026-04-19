@@ -114,7 +114,7 @@ export async function runBackup(): Promise<BackupResult> {
 async function sendBackupEmail(
   fileName: string,
   signedUrl: string | undefined,
-  attachment: Buffer
+  _attachment: Buffer
 ): Promise<void> {
   const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, BACKUP_EMAIL_TO } =
     process.env;
@@ -146,13 +146,6 @@ async function sendBackupEmail(
       <p>The backup contains: profiles, jobs, marketplace listings, orders, articles, ad placements, and site settings.</p>
       <p style="color:#888;font-size:12px">Expatriates 360 automated backup system</p>
     `,
-    attachments: [
-      {
-        filename: fileName,
-        content: attachment,
-        contentType: "application/json",
-      },
-    ],
   });
 }
 
