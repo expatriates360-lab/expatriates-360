@@ -128,7 +128,7 @@ export function ContactContent() {
               </p>
               <button
                 onClick={() => setStatus("idle")}
-                className="mt-2 text-sm text-primary underline-offset-4 hover:underline"
+                className="mt-2 text-sm text-primary underline-offset-4 hover:underline cursor-pointer"
               >
                 Send another message
               </button>

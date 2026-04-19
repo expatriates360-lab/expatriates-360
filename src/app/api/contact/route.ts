@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
   try {
     await transporter.sendMail({
       from: `"Expatriates 360 Contact" <${SMTP_USER}>`,
-      to: "iamtabeenhaider@gmail.com",
+      to: "contact@expatriates360.com",
       replyTo: `"${fullName.trim()}" <${email.trim()}>`,
       subject: `New message from ${fullName.trim()}`,
       html,

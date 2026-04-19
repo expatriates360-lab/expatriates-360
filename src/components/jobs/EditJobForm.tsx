@@ -338,7 +338,7 @@ export function EditJobForm({ job }: { job: Job }) {
               type="button"
               variant="ghost"
               size="sm"
-              className="text-xs text-destructive hover:text-destructive h-7 px-2"
+              className="text-xs text-destructive hover:text-destructive h-7 px-2 cursor-pointer"
               onClick={() => setOfficeLocation(null)}
             >
               Clear location
@@ -346,7 +346,7 @@ export function EditJobForm({ job }: { job: Job }) {
           )}
         </Section>
 
-        <Button type="submit" className="h-11 w-full sm:w-auto" disabled={isLoading}>
+        <Button type="submit" className="h-11 w-full sm:w-auto cursor-pointer" disabled={isLoading}>
           {isLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
           Save Changes
         </Button>

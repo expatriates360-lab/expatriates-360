@@ -64,7 +64,7 @@ export function JobRowActions({ jobId, jobStatus }: JobRowActionsProps) {
       {!isClosed && (
         <AlertDialog>
           <AlertDialogTrigger
-            className={buttonVariants({ variant: "ghost", size: "icon" }) + " text-muted-foreground hover:text-amber-600"}
+            className={buttonVariants({ variant: "ghost", size: "icon" }) + " text-muted-foreground hover:text-amber-600 transition-colors duration-200 cursor-pointer"}
             aria-label="Close job"
             disabled={isClosing}
           >
@@ -83,8 +83,8 @@ export function JobRowActions({ jobId, jobStatus }: JobRowActionsProps) {
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction onClick={handleClose}>
+              <AlertDialogCancel className="cursor-pointer">Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={handleClose} className="cursor-pointer">
                 Mark as Closed
               </AlertDialogAction>
             </AlertDialogFooter>
