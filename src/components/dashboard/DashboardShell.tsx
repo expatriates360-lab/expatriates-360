@@ -210,13 +210,15 @@ function SidebarContent({
     <div className="flex flex-col h-full">
       {/* Logo */}
       <div className="flex items-center px-5 h-16 border-b border-border shrink-0">
-        <Image
-          src="/assets/logo new.png"
-          alt="Expatriates 360"
-          width={130}
-          height={36}
-          className="h-8 w-auto object-contain"
-        />
+        <Link href="/">
+          <Image
+            src="/assets/logo new.png"
+            alt="Expatriates 360"
+            width={130}
+            height={36}
+            className="h-8 w-auto object-contain"
+          />
+        </Link>
       </div>
 
       {/* Nav links */}
