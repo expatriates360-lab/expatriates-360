@@ -25,7 +25,6 @@ export async function FeaturedCandidatesSection() {
     .from("profiles")
     .select("id, full_name, profession, location")
     .eq("role", "seeker")
-    .not("profession", "is", null)
     .order("created_at", { ascending: false })
     .limit(4);
 
@@ -64,7 +63,9 @@ export async function FeaturedCandidatesSection() {
                 <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors duration-200">
                   {candidate.full_name ?? "Anonymous"}
                 </h3>
-                <p className="text-sm text-muted-foreground mt-0.5">{candidate.profession}</p>
+                {(candidate.profession) && (
+                  <p className="text-sm text-muted-foreground mt-0.5">{candidate.profession}</p>
+                )}
                 {candidate.location && (
                   <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
                     <MapPin className="h-3 w-3" />

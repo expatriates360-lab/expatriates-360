@@ -5,6 +5,8 @@ import { FeaturedCandidatesSection } from "@/components/home/FeaturedCandidatesS
 import { CtaBanner } from "@/components/home/CtaBanner";
 import type { Metadata } from "next";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Home — Your Global Expat Career Hub",
 };
