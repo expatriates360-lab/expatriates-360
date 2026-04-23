@@ -206,8 +206,6 @@ export function OfficeLocationPicker({ value, onChange }: OfficeLocationPickerPr
     </div>
   );
 }
-
-import { MapPin, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 
 const LIBRARIES: ("places")[] = ["places"];
