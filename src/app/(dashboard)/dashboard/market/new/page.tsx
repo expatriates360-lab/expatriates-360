@@ -215,7 +215,7 @@ export default function NewListingPage() {
                 </label>
                 <Select value={category} onValueChange={(v: string | null) => { if (v) setCategory(v); }}>
                   <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select categoryâ€¦" />
+                    <SelectValue placeholder="Select category..." />
                   </SelectTrigger>
                   <SelectContent>
                     {LISTING_CATEGORIES.map((c) => (
@@ -228,7 +228,7 @@ export default function NewListingPage() {
                 <label className="text-sm font-medium block mb-1.5">Location</label>
                 <Select value={location} onValueChange={(v: string | null) => { if (v) setLocation(v); }}>
                   <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select locationâ€¦" />
+                    <SelectValue placeholder="Select location..." />
                   </SelectTrigger>
                   <SelectContent>
                     {LOCATIONS.map((l) => (
