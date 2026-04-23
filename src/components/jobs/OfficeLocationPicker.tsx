@@ -19,20 +19,37 @@ interface OfficeLocationPickerProps {
   onChange: (v: OfficeLocation) => void;
 }
 
-const PATTERNS = [
-  /@(-?\d+\.\d+),(-?\d+\.\d+)/,
-  /[?&]q=(-?\d+\.\d+),(-?\d+\.\d+)/,
-  /\/(-?\d+\.\d+),(-?\d+\.\d+)/,
-  /ll=(-?\d+\.\d+),(-?\d+\.\d+)/,
+// Ordered patterns — more specific first
+const PATTERNS: RegExp[] = [
+  // @lat,lng (standard Google Maps)
+  /@(-?\d{1,2}\.\d{3,})[,+%2C]+(-?\d{1,3}\.\d{3,})/i,
+  // ?q=lat,lng or &q=lat,lng
+  /[?&]q=(-?\d{1,2}\.\d{3,})[,+%2C]+(-?\d{1,3}\.\d{3,})/i,
+  // ll=lat,lng
+  /ll=(-?\d{1,2}\.\d{3,})[,+%2C]+(-?\d{1,3}\.\d{3,})/i,
+  // /place/City/lat,lng or /search/lat,lng
+  /\/(?:place|search)\/[^/]*\/(-?\d{1,2}\.\d{3,})[,+%2C]+(-?\d{1,3}\.\d{3,})/i,
+  // URL-encoded coords: lat%2Clng
+  /(-?\d{1,2}\.\d{3,})%2C(-?\d{1,3}\.\d{3,})/i,
+  // Generic /lat,lng path segment (fallback)
+  /\/(-?\d{1,2}\.\d{3,})[,+%2C]+(-?\d{1,3}\.\d{3,})(?:\/|$|\?)/i,
 ];
 
 function extractCoords(url: string): { lat: number; lng: number } | null {
-  for (const pattern of PATTERNS) {
-    const m = url.match(pattern);
-    if (m) {
-      const lat = parseFloat(m[1]);
-      const lng = parseFloat(m[2]);
-      if (!isNaN(lat) && !isNaN(lng)) return { lat, lng };
+  // Decode percent-encoding for easier matching
+  let decoded = url;
+  try { decoded = decodeURIComponent(url); } catch { /* keep original */ }
+
+  for (const source of [url, decoded]) {
+    for (const pattern of PATTERNS) {
+      const m = source.match(pattern);
+      if (m) {
+        const lat = parseFloat(m[1]);
+        const lng = parseFloat(m[2]);
+        if (!isNaN(lat) && !isNaN(lng) && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
+          return { lat, lng };
+        }
+      }
     }
   }
   return null;
