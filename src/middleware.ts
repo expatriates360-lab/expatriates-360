@@ -15,6 +15,7 @@ const isPublicRoute = createRouteMatcher([
   "/register(.*)",
   "/api/webhooks(.*)", // Clerk webhook must be public
   "/api/cron(.*)",    // Cron jobs use CRON_SECRET bearer token, not Clerk session
+  "/api/maps(.*)",    // Maps utility routes (URL expander)
   "/ads.txt",         // AdSense verification
 ]);
 
