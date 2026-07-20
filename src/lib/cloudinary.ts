@@ -1,7 +1,7 @@
 // Cloudinary upload helper (client-side unsigned upload)
 export async function uploadToCloudinary(
   file: File,
-  folder: string = "expatriates360/avatars",
+  folder: string = "hunared/avatars",
   options?: {
     /** Override the upload preset. Defaults to NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET. */
     preset?: string;

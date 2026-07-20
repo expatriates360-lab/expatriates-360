@@ -5,7 +5,7 @@ import { Globe, Users, Briefcase, BookOpen, ShoppingBag, Star } from "lucide-rea
 export const metadata: Metadata = {
   title: "About Us",
   description:
-    "Learn about Expatriates 360 — the complete 360° portal built to empower expats with jobs, community, marketplace, and education worldwide.",
+    "Learn about Hunared — the complete 360° portal built to empower expats with jobs, community, marketplace, and education worldwide.",
 };
 
 const features = [
@@ -68,7 +68,7 @@ export default function AboutPage() {
             <br className="hidden sm:block" /> for Expat Life
           </h1>
           <p className="mx-auto max-w-2xl text-lg text-muted-foreground leading-relaxed">
-            Expatriates 360 brings together everything an expat needs — career
+            Hunared brings together everything an expat needs — career
             opportunities, community, marketplace, and knowledge — under one
             trusted roof.
           </p>
@@ -97,7 +97,7 @@ export default function AboutPage() {
                   paywalls.
                 </p>
                 <p>
-                  Expatriates 360 was founded to change that. We built a single,
+                  Hunared was founded to change that. We built a single,
                   beautifully integrated space where every expat — whether fresh
                   off the plane or decades into their international career — can
                   find work, build connections, buy and sell, and grow.
@@ -135,7 +135,7 @@ export default function AboutPage() {
         </SiteContainer>
       </section>
 
-      {/* ── Why Choose Expatriates 360 ────────────────────────── */}
+      {/* ── Why Choose Hunared ────────────────────────── */}
       <section className="py-20 sm:py-28 bg-muted/30 border-y border-border">
         <SiteContainer>
           <div className="text-center mb-14 animate-in fade-in slide-in-from-bottom-4 duration-700">
@@ -147,7 +147,7 @@ export default function AboutPage() {
               <span className="gradient-text">in one place</span>
             </h2>
             <p className="mx-auto max-w-xl text-muted-foreground">
-              Six pillars that make Expatriates 360 the most complete expat
+              Six pillars that make Hunared the most complete expat
               platform on the web.
             </p>
           </div>
@@ -180,7 +180,7 @@ export default function AboutPage() {
           </h2>
           <p className="mx-auto max-w-xl text-muted-foreground mb-8">
             Join thousands of expats who found their next opportunity through
-            Expatriates 360.
+            Hunared.
           </p>
           <div className="flex flex-wrap gap-4 justify-center">
             <a

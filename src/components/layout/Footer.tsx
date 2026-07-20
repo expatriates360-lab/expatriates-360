@@ -38,8 +38,8 @@ export function Footer() {
           <div className="lg:col-span-2 space-y-4">
             <Link href="/" className="inline-flex items-center gap-2.5 group">
               <Image
-                src="/assets/logo new.png"
-                alt="Expatriates 360"
+                src="/assets/logos/logo-horizontal.png"
+                alt="Hunared"
                 width={140}
                 height={40}
                 className="h-10 w-auto object-contain"
@@ -86,7 +86,7 @@ export function Footer() {
 
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted-foreground ">
           <div className="flex flex-col sm:flex-row items-center gap-2 w-full justify-between">
-            <span>© {new Date().getFullYear()} Expatriates 360. All rights reserved.</span>
+            <span>© {new Date().getFullYear()} Hunared. All rights reserved.</span>
             
           </div>
         </div>

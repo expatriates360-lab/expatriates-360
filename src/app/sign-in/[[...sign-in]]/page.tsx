@@ -15,7 +15,7 @@ export default function SignInPage() {
       <div className="w-full max-w-md space-y-6">
         <div className="text-center space-y-1">
           <h1 className="text-2xl font-bold gradient-text">Welcome Back</h1>
-          <p className="text-sm text-muted-foreground">Sign in to your Expatriates 360 account</p>
+          <p className="text-sm text-muted-foreground">Sign in to your Hunared account</p>
         </div>
         <SignIn
           appearance={{

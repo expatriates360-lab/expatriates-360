@@ -61,15 +61,15 @@ export async function POST(request: NextRequest) {
         </table>
       </div>
       <p style="color: #94a3b8; font-size: 12px; margin-top: 16px; text-align: center;">
-        Sent from the Expatriates 360 contact form &bull; Reply directly to reach the sender.
+        Sent from the Hunared contact form &bull; Reply directly to reach the sender.
       </p>
     </div>
   `;
 
   try {
     await transporter.sendMail({
-      from: `"Expatriates 360 Contact" <${SMTP_USER}>`,
-      to: "contact@expatriates360.com",
+      from: `"Hunared Contact" <${SMTP_USER}>`,
+      to: "hunaredofficial@gmail.com",
       replyTo: `"${fullName.trim()}" <${email.trim()}>`,
       subject: `New message from ${fullName.trim()}`,
       html,

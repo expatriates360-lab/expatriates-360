@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Terms of Service | Expatriates 360",
-  description: "The terms and conditions governing your use of the Expatriates 360 platform.",
+  title: "Terms of Service | Hunared",
+  description: "The terms and conditions governing your use of the Hunared platform.",
 };
 
 export default function TermsOfServicePage() {
@@ -14,7 +14,7 @@ export default function TermsOfServicePage() {
           <strong>Last Updated: April 16, 2026</strong>
         </p>
         <p>
-          By accessing and using Expatriates 360, you agree to comply with and be bound by the
+          By accessing and using Hunared, you agree to comply with and be bound by the
           following terms and conditions.
         </p>
 
@@ -47,7 +47,7 @@ export default function TermsOfServicePage() {
 
         <h2>3. Platform Liability</h2>
         <p>
-          Expatriates 360 acts solely as a connecting platform between job seekers, employers, and
+          Hunared acts solely as a connecting platform between job seekers, employers, and
           marketplace buyers/sellers.
         </p>
         <ul>
@@ -60,8 +60,8 @@ export default function TermsOfServicePage() {
 
         <h2>4. Intellectual Property</h2>
         <p>
-          The Expatriates 360 logo, design, and original platform code are the property of
-          Expatriates 360. You may not copy, modify, or distribute our intellectual property
+          The Hunared logo, design, and original platform code are the property of
+          Hunared. You may not copy, modify, or distribute our intellectual property
           without permission.
         </p>
 
@@ -74,7 +74,7 @@ export default function TermsOfServicePage() {
         <h2>6. Contact Us</h2>
         <p>
           For any questions regarding these Terms, please contact us at{" "}
-          <a href="mailto:admin@expatriates360.com">admin@expatriates360.com</a>.
+          <a href="mailto:hunaredofficial@gmail.com">hunaredofficial@gmail.com</a>.
         </p>
       </article>
     </main>

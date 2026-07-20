@@ -8,15 +8,18 @@ const isPublicRoute = createRouteMatcher([
   "/candidates(.*)",
   "/market(.*)",
   "/education(.*)",
+  "/search(.*)",
+   "/post(.*)",
   "/contact(.*)",
   "/privacy(.*)",
   "/terms(.*)",
   "/sign-in(.*)",
   "/register(.*)",
-  "/api/webhooks(.*)", // Clerk webhook must be public
-  "/api/cron(.*)",    // Cron jobs use CRON_SECRET bearer token, not Clerk session
-  "/api/maps(.*)",    // Maps utility routes (URL expander)
-  "/ads.txt",         // AdSense verification
+  "/create(.*)",        // ✅ ADD THIS LINE
+  "/api/webhooks(.*)",
+  "/api/cron(.*)",
+  "/api/maps(.*)",
+  "/ads.txt",
 ]);
 
 export default clerkMiddleware(async (auth, req) => {
@@ -27,8 +30,8 @@ export default clerkMiddleware(async (auth, req) => {
 
 export const config = {
   matcher: [
-    // Skip Next.js internals and static files
     "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
     "/(api|trpc)(.*)",
   ],
 };
+

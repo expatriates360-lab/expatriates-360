@@ -1,5 +1,5 @@
 -- ================================================================
--- Expatriates 360 — Supabase Database Schema
+-- Hunared — Supabase Database Schema
 -- Run this in Supabase SQL Editor → New Query
 -- ================================================================
 

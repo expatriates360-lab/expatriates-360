@@ -1,10 +1,11 @@
-﻿"use client";
+"use client";
 
 import { useState, useRef } from "react";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useSearchParams } from "next/navigation";
 import {
   Select,
   SelectTrigger,
@@ -14,7 +15,8 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { ImagePlus, X, Loader2, Link2 } from "lucide-react";
-import { LISTING_CATEGORIES, LISTING_CURRENCIES, LOCATIONS } from "@/lib/constants";
+import { LISTING_CATEGORIES, LISTING_CURRENCIES } from "@/lib/constants";
+import { COUNTRIES } from "@/lib/countries";
 
 const RichTextEditor = dynamic(
   () => import("@/components/ui/RichTextEditor").then((m) => m.RichTextEditor),
@@ -25,6 +27,25 @@ const CLOUDINARY_CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ?? "
 const CLOUDINARY_UPLOAD_PRESET = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET ?? "";
 
 type ListingType = "standard" | "native" | "affiliate";
+
+// Subcategories per top-level category (from client spec)
+const SUBCATEGORIES: Record<string, string[]> = {
+  accommodation: [
+    "Houses for Rent", "Apartments", "Villas", "Rooms", "Bed Spaces",
+    "Commercial Property", "Offices", "Shops", "Warehouses", "Land",
+  ],
+  vehicles: ["Cars", "Motorcycles", "Trucks", "Spare Parts", "Tires"],
+  electronics: ["Mobile Phones", "Laptops", "Computers", "Tablets", "Watches", "Printers"],
+  services: [
+    "Electrical", "Mechanical", "Plumbing", "HVAC", "Carpentry", "Painting",
+    "Welding", "IT Support", "Web Development", "Design", "Cleaning",
+    "Security", "Logistics", "Transportation", "Consulting",
+  ],
+  other: [
+    "Furniture", "Home Appliances", "Kitchen Equipment", "Decor",
+    "Tools", "Machinery", "Safety Equipment", "Construction Equipment",
+  ],
+};
 
 async function uploadImageToCloudinary(
   file: File
@@ -49,8 +70,11 @@ export default function NewListingPage() {
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
   const [currency, setCurrency] = useState("USD");
-  const [category, setCategory] = useState("");
-  const [location, setLocation] = useState("");
+  const searchParams = useSearchParams();
+  const [category, setCategory] = useState(searchParams.get("category") ?? "");
+  const [subcategory, setSubcategory] = useState("");
+  const [country, setCountry] = useState("");
+  const [city, setCity] = useState("");
   const [contactPhone, setContactPhone] = useState("");
   const [listingType, setListingType] = useState<ListingType>("standard");
   const [externalLink, setExternalLink] = useState("");
@@ -62,13 +86,14 @@ export default function NewListingPage() {
   const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  const availableSubcategories = category ? (SUBCATEGORIES[category] ?? []) : [];
+
   function handleImageChange(e: React.ChangeEvent<HTMLInputElement>) {
     const files = Array.from(e.target.files ?? []);
     if (!files.length) return;
     const newPreviews = files.map((f) => URL.createObjectURL(f));
     setImageFiles((prev) => [...prev, ...files]);
     setImagePreviews((prev) => [...prev, ...newPreviews]);
-    // Reset so the same file can be selected again if needed
     e.target.value = "";
   }
 
@@ -103,6 +128,11 @@ export default function NewListingPage() {
         setUploading(false);
       }
 
+      const countryName = country
+        ? COUNTRIES.find((c) => c.code === country)?.name ?? country
+        : "";
+      const locationString = [city.trim(), countryName].filter(Boolean).join(", ");
+
       const res = await fetch("/api/market", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -112,7 +142,10 @@ export default function NewListingPage() {
           price: price.trim(),
           currency,
           category,
-          location: location || undefined,
+          subcategory: subcategory || undefined,
+          country: country || undefined,
+          city: city.trim() || undefined,
+          location: locationString || undefined,
           contact_phone: contactPhone.trim() || undefined,
           image_urls: imageUrls,
           listing_type: listingType,
@@ -207,13 +240,21 @@ export default function NewListingPage() {
               />
             </div>
 
-            {/* Category + Location */}
+            {/* Category + Subcategory */}
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="text-sm font-medium block mb-1.5">
                   Category <span className="text-destructive">*</span>
                 </label>
-                <Select value={category} onValueChange={(v: string | null) => { if (v) setCategory(v); }}>
+                <Select
+                  value={category}
+                  onValueChange={(v: string | null) => {
+                    if (v) {
+                      setCategory(v);
+                      setSubcategory(""); // reset when parent changes
+                    }
+                  }}
+                >
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select category..." />
                   </SelectTrigger>
@@ -225,17 +266,47 @@ export default function NewListingPage() {
                 </Select>
               </div>
               <div>
-                <label className="text-sm font-medium block mb-1.5">Location</label>
-                <Select value={location} onValueChange={(v: string | null) => { if (v) setLocation(v); }}>
+                <label className="text-sm font-medium block mb-1.5">Subcategory</label>
+                <Select
+                  value={subcategory}
+                  onValueChange={(v: string | null) => { if (v) setSubcategory(v); }}
+                  disabled={!availableSubcategories.length}
+                >
                   <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select location..." />
+                    <SelectValue placeholder={availableSubcategories.length ? "Select subcategory..." : "Select category first"} />
                   </SelectTrigger>
                   <SelectContent>
-                    {LOCATIONS.map((l) => (
-                      <SelectItem key={l} value={l}>{l}</SelectItem>
+                    {availableSubcategories.map((s) => (
+                      <SelectItem key={s} value={s}>{s}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
+              </div>
+            </div>
+
+            {/* Country + City */}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm font-medium block mb-1.5">Country</label>
+                <Select value={country} onValueChange={(v: string | null) => { if (v) setCountry(v); }}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select country..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {COUNTRIES.map((c) => (
+                      <SelectItem key={c.code} value={c.code}>{c.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <label className="text-sm font-medium block mb-1.5">City</label>
+                <input
+                  value={city}
+                  onChange={(e) => setCity(e.target.value)}
+                  placeholder="e.g. Riyadh"
+                  className="w-full px-3 py-2 text-sm rounded-md border border-input bg-background focus:outline-none focus:ring-2 focus:ring-ring"
+                />
               </div>
             </div>
 
@@ -282,7 +353,7 @@ export default function NewListingPage() {
               </Select>
             </div>
 
-            {/* External link â€” shown only for affiliate type */}
+            {/* External link — shown only for affiliate type */}
             {listingType === "affiliate" && (
               <div>
                 <label className="text-sm font-medium block mb-1.5">

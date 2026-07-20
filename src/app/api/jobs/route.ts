@@ -1,13 +1,20 @@
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { createAdminClient } from "@/lib/supabase";
-import { JOB_CATEGORIES, LOCATIONS, DURATIONS, SALARY_TYPES } from "@/lib/constants";
+import { JOB_CATEGORIES, DURATIONS, SALARY_TYPES } from "@/lib/constants";
+import { COUNTRIES } from "@/lib/countries";
+import type { EmploymentType } from "@/types/database";
+
+const EMPLOYMENT_TYPES = ["permanent", "temporary", "task_force"] as const;
 
 interface PostJobBody {
   jobTitle: string;
   jobDescription: string;
   positions?: number | null;
   location: string;
+  country: string;
+  city: string;
+  employmentType: string;
   duration: string;
   salaryType: string;
   salaryRate?: string | null;
@@ -26,7 +33,13 @@ interface PostJobBody {
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const category = searchParams.get("category");
-  const location = searchParams.get("location");
+  const country = searchParams.get("country");
+  const city = searchParams.get("city");
+  const employmentTypeParam = searchParams.get("employmentType");
+  const employmentType =
+    employmentTypeParam && EMPLOYMENT_TYPES.includes(employmentTypeParam as EmploymentType)
+      ? (employmentTypeParam as EmploymentType)
+      : null;
   const search = searchParams.get("search");
   const page = Math.max(1, parseInt(searchParams.get("page") ?? "1", 10));
   const limit = 12;
@@ -35,13 +48,18 @@ export async function GET(req: Request) {
   const supabase = createAdminClient();
   let query = supabase
     .from("jobs")
-    .select("id, job_title, company_name, location, salary_rate, duration, category, positions, status, created_at", { count: "exact" })
+    .select(
+      "id, job_title, company_name, location, country, city, employment_type, salary_rate, duration, category, positions, status, created_at",
+      { count: "exact" }
+    )
     .eq("status", "approved")
     .order("created_at", { ascending: false })
     .range(from, from + limit - 1);
 
   if (category) query = query.eq("category", category);
-  if (location) query = query.eq("location", location);
+  if (country) query = query.eq("country", country);
+  if (city) query = query.ilike("city", `%${city}%`);
+  if (employmentType) query = query.eq("employment_type", employmentType);
   if (search) query = query.ilike("job_title", `%${search}%`);
 
   const { data, count, error } = await query;
@@ -58,15 +76,25 @@ export async function POST(req: Request) {
   const supabase = createAdminClient();
 
   // Confirm user is an employer
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("role")
-    .eq("id", userId)
-    .single();
+  const { data: profile, error: profileError } = await supabase
+  .from("profiles")
+  .select("role")
+  .eq("id", userId)
+  .single();
 
-  if (!profile || profile.role !== "employer") {
-    return NextResponse.json({ error: "Only employers can post jobs" }, { status: 403 });
-  }
+if (profileError || !profile) {
+  return NextResponse.json(
+    { error: "Profile not found" },
+    { status: 404 }
+  );
+}
+
+if (!["admin", "employer"].includes(profile.role)) {
+  return NextResponse.json(
+    { error: "Only employers can post jobs." },
+    { status: 403 }
+  );
+}
 
   let body: PostJobBody;
   try {
@@ -80,7 +108,20 @@ export async function POST(req: Request) {
   if (!body.jobDescription?.trim()) return NextResponse.json({ error: "Job description is required" }, { status: 400 });
   if (!body.companyName?.trim()) return NextResponse.json({ error: "Company name is required" }, { status: 400 });
   if (!body.companyPhone?.trim()) return NextResponse.json({ error: "Company phone is required" }, { status: 400 });
-  if (!LOCATIONS.includes(body.location as (typeof LOCATIONS)[number])) return NextResponse.json({ error: "Invalid location" }, { status: 400 });
+
+  if (!body.country || !COUNTRIES.some((c) => c.code === body.country)) {
+    return NextResponse.json({ error: "Invalid country" }, { status: 400 });
+  }
+  if (!body.city?.trim()) {
+    return NextResponse.json({ error: "City is required" }, { status: 400 });
+  }
+  if (!EMPLOYMENT_TYPES.includes(body.employmentType as (typeof EMPLOYMENT_TYPES)[number])) {
+    return NextResponse.json({ error: "Invalid employment type" }, { status: 400 });
+  }
+  if (!body.location?.trim()) {
+    return NextResponse.json({ error: "Location is required" }, { status: 400 });
+  }
+
   if (!DURATIONS.includes(body.duration as (typeof DURATIONS)[number])) return NextResponse.json({ error: "Invalid duration" }, { status: 400 });
   if (!JOB_CATEGORIES.includes(body.category as (typeof JOB_CATEGORIES)[number])) return NextResponse.json({ error: "Invalid category" }, { status: 400 });
   if (!SALARY_TYPES.includes(body.salaryType as (typeof SALARY_TYPES)[number])) return NextResponse.json({ error: "Invalid salary type" }, { status: 400 });
@@ -100,7 +141,10 @@ export async function POST(req: Request) {
       job_title: body.jobTitle.trim(),
       job_description: body.jobDescription.trim(),
       positions: body.positions ?? null,
-      location: body.location,
+      location: body.location.trim(),
+      country: body.country,
+      city: body.city.trim(),
+      employment_type: body.employmentType as EmploymentType,
       duration: body.duration,
       salary_type: body.salaryType,
       salary_rate: body.salaryRate?.trim() ?? null,

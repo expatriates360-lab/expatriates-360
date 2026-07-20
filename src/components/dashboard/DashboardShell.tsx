@@ -212,8 +212,8 @@ function SidebarContent({
       <div className="flex items-center px-5 h-16 border-b border-border shrink-0">
         <Link href="/">
           <Image
-            src="/assets/logo new.png"
-            alt="Expatriates 360"
+            src="/assets/logos/logo-horizontal.png"
+            alt="Hunared"
             width={130}
             height={36}
             className="h-8 w-auto object-contain"
@@ -328,7 +328,7 @@ export function DashboardShell({ role, fullName, children }: DashboardShellProps
             <Menu className="h-5 w-5" />
           </button>
           <span className="font-semibold text-sm gradient-text flex-1">
-            Expatriates 360
+            Hunared
           </span>
           <UserButton />
         </header>

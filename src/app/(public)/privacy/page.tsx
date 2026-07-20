@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy | Expatriates 360",
-  description: "How Expatriates 360 collects, uses, and protects your personal information.",
+  title: "Privacy Policy | Hunared",
+  description: "How Hunared collects, uses, and protects your personal information.",
 };
 
 export default function PrivacyPolicyPage() {
@@ -14,7 +14,7 @@ export default function PrivacyPolicyPage() {
           <strong>Last Updated: April 16, 2026</strong>
         </p>
         <p>
-          Welcome to Expatriates 360. We are committed to protecting your personal information and
+          Welcome to Hunared. We are committed to protecting your personal information and
           your right to privacy.
         </p>
 
@@ -77,7 +77,7 @@ export default function PrivacyPolicyPage() {
         <h2>5. Contact Us</h2>
         <p>
           If you have questions or comments about this notice, you may email us at{" "}
-          <a href="mailto:admin@expatriates360.com">admin@expatriates360.com</a>.
+          <a href="mailto:hunaredofficial@gmail.com">hunaredofficial@gmail.com</a>.
         </p>
       </article>
     </main>

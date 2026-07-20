@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Select,
   SelectTrigger,
-  SelectValue,
+  SelectValue, 
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
@@ -20,9 +20,15 @@ export default function NewArticlePage() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [category, setCategory] = useState("");
+  const [subcategory, setSubcategory] = useState("");
   const [loading, setLoading] = useState(false);
   const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
   const recaptchaRef = useRef<ReCAPTCHA>(null);
+
+  const ARTICLE_SUBCATEGORIES = [
+    "Courses", "Learning Programs", "Training Programs",
+    "Certifications", "Internships", "Scholarships", "Career Tips",
+  ];
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -36,7 +42,7 @@ export default function NewArticlePage() {
       const res = await fetch("/api/articles", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title: title.trim(), content: content.trim(), category, recaptchaToken }),
+        body: JSON.stringify({ title: title.trim(), content: content.trim(), category, subcategory: subcategory || undefined, recaptchaToken }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Failed to submit article");
@@ -96,6 +102,21 @@ export default function NewArticlePage() {
                     <SelectItem key={c.value} value={c.value} className="cursor-pointer" >
                       {c.label}
                     </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Subcategory */}
+            <div>
+              <label className="text-sm font-medium block mb-1.5">Subcategory (optional)</label>
+              <Select value={subcategory} onValueChange={(v: string | null) => { if (v) setSubcategory(v); }}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="e.g. Certifications, Scholarships…" />
+                </SelectTrigger>
+                <SelectContent>
+                  {ARTICLE_SUBCATEGORIES.map((s) => (
+                    <SelectItem key={s} value={s}>{s}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>

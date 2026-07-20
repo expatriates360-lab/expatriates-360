@@ -5,14 +5,17 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { CATEGORY_COLORS } from "@/lib/constants";
+import { CATEGORY_COLORS, JOB_CATEGORIES } from "@/lib/constants";
+import { COUNTRIES } from "@/lib/countries";
 import { JobsFilter } from "@/components/jobs/JobsFilter";
 import type { Job } from "@/types/database";
 
 interface SearchParams {
   search?: string;
   category?: string;
-  location?: string;
+  country?: string;
+  city?: string;
+  employmentType?: string;
   page?: string;
 }
 
@@ -24,33 +27,26 @@ export default async function JobsPage({
   const sp = await searchParams;
   const search = sp.search ?? "";
   const category = sp.category ?? "";
-  const location = sp.location ?? "";
+  const country = sp.country ?? "";
+  const city = sp.city ?? "";
+  const employmentType = sp.employmentType ?? "";
   const page = Math.max(1, parseInt(sp.page ?? "1", 10));
   const limit = 12;
   const from = (page - 1) * limit;
 
   let jobs: Partial<Job>[] = [];
   let total = 0;
-  let categories: string[] = [];
+  // Full spec category list for the filter dropdown — always complete,
+  // not limited to categories that already have posted jobs.
+  const categories: string[] = [...JOB_CATEGORIES];
 
   try {
     const supabase = createAdminClient();
-    
-    // BYPASS FIX: Cast supabase as any to completely disable the schema type-checker here
-    let catRes = await (supabase as any).from("categories").select("name");
-    
-    if (catRes?.data && catRes.data.length > 0) {
-      categories = catRes.data.map((c: any) => c.name);
-    } else {
-      // fallback: get distinct category values from jobs
-     const { data: jobCats } = await supabase.from("jobs").select("category").not("category", "is", null).neq("category", "").neq("status", "draft");
-      categories = Array.from(new Set((jobCats ?? []).map((j: any) => j.category).filter(Boolean)));
-    }
 
     let query = supabase
       .from("jobs")
       .select(
-        "id, job_title, company_name, location, salary_rate, duration, category, positions, created_at",
+        "id, job_title, company_name, location, country, city, employment_type, salary_rate, duration, category, positions, created_at",
         { count: "exact" }
       )
       .eq("status", "approved")
@@ -58,7 +54,11 @@ export default async function JobsPage({
       .range(from, from + limit - 1);
 
     if (category) query = query.eq("category", category);
-    if (location) query = query.eq("location", location);
+    if (country) query = query.eq("country", country);
+    if (city) query = query.ilike("city", `%${city}%`);
+    if (employmentType === "permanent" || employmentType === "temporary" || employmentType === "task_force") {
+      query = query.eq("employment_type", employmentType);
+    }
     if (search) query = query.ilike("job_title", `%${search}%`);
 
     const { data, count } = await query;
@@ -69,7 +69,8 @@ export default async function JobsPage({
   }
 
   const totalPages = Math.ceil(total / limit);
-  const hasFilters = !!(search || category || location);
+  const hasFilters = !!(search || category || country || city || employmentType);
+  const activeCountry = COUNTRIES.find((c) => c.code === country);
 
   return (
     <div className="min-h-screen">
@@ -77,7 +78,7 @@ export default async function JobsPage({
       <section className="bg-gradient-to-br from-primary/10 via-background to-background border-b border-border py-12 pt-30">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <h1 className="text-3xl sm:text-4xl font-bold mb-2">
-            <span className="gradient-text">Expat Job Board</span>
+            <span className="gradient-text">Hunared Job Board</span>
           </h1>
           <p className="text-muted-foreground mb-6">
             {total > 0
@@ -87,7 +88,8 @@ export default async function JobsPage({
           <JobsFilter
             defaultSearch={search}
             defaultCategory={category}
-            defaultLocation={location}
+            defaultCountry={country}
+            defaultCity={city}
             categories={categories}
           />
         </div>
@@ -100,7 +102,9 @@ export default async function JobsPage({
             {total} result{total !== 1 ? "s" : ""} found
             {search && ` for "${search}"`}
             {category && ` in ${category}`}
-            {location && ` · ${location}`}
+            {employmentType && ` · ${employmentType.replace("_", " ")}`}
+            {activeCountry && ` · ${activeCountry.name}`}
+            {city && ` · ${city}`}
           </p>
         )}
 
@@ -127,7 +131,7 @@ export default async function JobsPage({
                 {page > 1 && (
                   <Button variant="outline" size="sm" asChild>
                     <Link
-                      href={`/jobs?${buildParams({ search, category, location, page: page - 1 })}`}
+                      href={`/jobs?${buildParams({ search, category, country, city, employmentType, page: page - 1 })}`}
                     >
                       Previous
                     </Link>
@@ -139,7 +143,7 @@ export default async function JobsPage({
                 {page < totalPages && (
                   <Button variant="outline" size="sm" asChild>
                     <Link
-                      href={`/jobs?${buildParams({ search, category, location, page: page + 1 })}`}
+                      href={`/jobs?${buildParams({ search, category, country, city, employmentType, page: page + 1 })}`}
                     >
                       Next
                     </Link>
@@ -165,16 +169,23 @@ function JobCard({ job }: { job: Partial<Job> }) {
   return (
     <Card className="group hover:border-primary/40 hover:shadow-md transition-all duration-200">
       <CardContent className="pt-5 pb-4 flex flex-col h-full">
-        {job.category && (
-          <Badge
-            className={cn(
-              "text-xs self-start mb-3",
-              CATEGORY_COLORS[job.category] ?? CATEGORY_COLORS["Other"]
-            )}
-          >
-            {job.category}
-          </Badge>
-        )}
+        <div className="flex items-center gap-1.5 flex-wrap mb-3">
+          {job.category && (
+            <Badge
+              className={cn(
+                "text-xs",
+                CATEGORY_COLORS[job.category] ?? CATEGORY_COLORS["Other"]
+              )}
+            >
+              {job.category}
+            </Badge>
+          )}
+          {job.employment_type && job.employment_type !== "permanent" && (
+            <Badge variant="outline" className="text-xs capitalize">
+              {job.employment_type.replace("_", " ")}
+            </Badge>
+          )}
+        </div>
         <Link href={`/jobs/${job.id}`} className="group/title">
           <h3 className="font-semibold text-foreground group-hover/title:text-primary transition-colors leading-snug mb-1">
             {job.job_title}
@@ -230,13 +241,17 @@ function JobCard({ job }: { job: Partial<Job> }) {
 function buildParams(p: {
   search: string;
   category: string;
-  location: string;
+  country: string;
+  city: string;
+  employmentType: string;
   page: number;
 }) {
   const params = new URLSearchParams();
   if (p.search) params.set("search", p.search);
   if (p.category) params.set("category", p.category);
-  if (p.location) params.set("location", p.location);
+  if (p.country) params.set("country", p.country);
+  if (p.city) params.set("city", p.city);
+  if (p.employmentType) params.set("employmentType", p.employmentType);
   if (p.page > 1) params.set("page", p.page.toString());
   return params.toString();
 }

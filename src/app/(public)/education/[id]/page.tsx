@@ -161,7 +161,7 @@ export default async function ArticleDetailPage({
                     <div className="h-11 w-11 rounded-full bg-muted flex items-center justify-center shrink-0">
                       <User className="h-5 w-5 text-muted-foreground" />
                     </div>
-                    <p className="text-sm text-muted-foreground">Expatriates 360 contributor</p>
+                    <p className="text-sm text-muted-foreground">Hunared contributor</p>
                   </div>
                 )}
               </CardContent>

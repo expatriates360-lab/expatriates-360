@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import {
@@ -12,45 +12,49 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { useCallback, useState } from "react";
-import { LOCATIONS } from "@/lib/constants";
+import { COUNTRIES } from "@/lib/countries";
 
 export function JobsFilter({
   defaultSearch,
   defaultCategory,
-  defaultLocation,
+  defaultCountry,
+  defaultCity,
   categories,
 }: {
   defaultSearch: string;
   defaultCategory: string;
-  defaultLocation: string;
+  defaultCountry: string;
+  defaultCity: string;
   categories: string[];
 }) {
   const router = useRouter();
   const [search, setSearch] = useState(defaultSearch);
   const [category, setCategory] = useState(defaultCategory);
-  const [location, setLocation] = useState(defaultLocation);
+  const [country, setCountry] = useState(defaultCountry);
+  const [city, setCity] = useState(defaultCity);
 
   const apply = useCallback(
-    (s: string, c: string, l: string) => {
+    (s: string, c: string, co: string, ci: string) => {
       const params = new URLSearchParams();
       if (s) params.set("search", s);
       if (c) params.set("category", c);
-      if (l) params.set("location", l);
+      if (co) params.set("country", co);
+      if (ci.trim()) params.set("city", ci.trim());
       router.push(`/jobs?${params.toString()}`);
     },
     [router]
   );
 
   return (
-    <div className="flex flex-col sm:flex-row gap-3">
-      <div className="relative flex-1">
+    <div className="flex flex-col sm:flex-row gap-3 flex-wrap">
+      <div className="relative flex-1 min-w-[180px]">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
           placeholder="Search jobs..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           onKeyDown={(e) => {
-            if (e.key === "Enter") apply(search, category, location);
+            if (e.key === "Enter") apply(search, category, country, city);
           }}
           className="pl-9"
         />
@@ -60,7 +64,7 @@ export function JobsFilter({
         onValueChange={(v: string | null) => {
           const val = v ?? "";
           setCategory(val);
-          apply(search, val, location);
+          apply(search, val, country, city);
         }}
       >
         <SelectTrigger className="sm:w-[180px] cursor-pointer">
@@ -76,39 +80,49 @@ export function JobsFilter({
         </SelectContent>
       </Select>
       <Select
-        value={location}
+        value={country}
         onValueChange={(v: string | null) => {
           const val = v ?? "";
-          setLocation(val);
-          apply(search, category, val);
+          setCountry(val);
+          apply(search, category, val, city);
         }}
       >
-        <SelectTrigger className="sm:w-[160px] cursor-pointer">
-          <SelectValue placeholder="All locations"  />
+        <SelectTrigger className="sm:w-[170px] cursor-pointer">
+          <SelectValue placeholder="All countries" />
         </SelectTrigger>
-        <SelectContent >
-          <SelectItem value="" className="cursor-pointer" >All locations</SelectItem>
-          {LOCATIONS.map((l) => (
-            <SelectItem key={l} value={l} className="cursor-pointer">
-              {l}
+        <SelectContent>
+          <SelectItem value="" className="cursor-pointer">All countries</SelectItem>
+          {COUNTRIES.map((c) => (
+            <SelectItem key={c.code} value={c.code} className="cursor-pointer">
+              {c.name}
             </SelectItem>
           ))}
         </SelectContent>
       </Select>
+      <Input
+        placeholder="City..."
+        value={city}
+        onChange={(e) => setCity(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") apply(search, category, country, city);
+        }}
+        className="sm:w-[130px]"
+      />
       <Button
         variant="outline"
-        onClick={() => apply(search, category, location)}
+        onClick={() => apply(search, category, country, city)}
         className="sm:w-auto cursor-pointer"
       >
         Search
       </Button>
-      {(search || category || location) && (
+      {(search || category || country || city) && (
         <Button
           variant="ghost"
           onClick={() => {
             setSearch("");
             setCategory("");
-            setLocation("");
+            setCountry("");
+            setCity("");
             router.push("/jobs");
           }}
           className="sm:w-auto cursor-pointer"

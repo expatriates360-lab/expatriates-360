@@ -8,8 +8,8 @@ const contactInfo = [
   {
     icon: Mail,
     label: "Email",
-    value: "contact@expatriates360.com",
-    href: "mailto:contact@expatriates360.com",
+    value: "hunaredofficial@gmail.com",
+    href: "mailto:hunaredofficial@gmail.com",
   },
   {
     icon: MapPin,

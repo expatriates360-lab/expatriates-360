@@ -6,7 +6,7 @@ import { Mail } from "lucide-react";
 export const metadata: Metadata = {
   title: "Contact Us",
   description:
-    "Get in touch with the Expatriates 360 team. We're here to help with questions, feedback, or partnership enquiries.",
+    "Get in touch with the Hunared team. We're here to help with questions, feedback, or partnership enquiries.",
 };
 
 export default function ContactPage() {

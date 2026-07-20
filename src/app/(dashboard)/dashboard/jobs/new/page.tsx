@@ -16,7 +16,8 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { JOB_CATEGORIES, LOCATIONS, DURATIONS, SALARY_TYPES } from "@/lib/constants";
+import { JOB_CATEGORIES, DURATIONS, SALARY_TYPES } from "@/lib/constants";
+import { COUNTRIES } from "@/lib/countries";
 import type { OfficeLocation } from "@/components/jobs/OfficeLocationPicker";
 import Link from "next/link";
 
@@ -32,7 +33,9 @@ interface JobForm {
   jobTitle: string;
   jobDescription: string;
   positions: string;
-  location: string;
+  country: string;
+  city: string;
+  employmentType: string;
   duration: string;
   salaryType: string;
   salaryRate: string;
@@ -53,7 +56,9 @@ export default function PostJobPage() {
     jobTitle: "",
     jobDescription: "",
     positions: "",
-    location: "",
+    country: "",
+    city: "",
+    employmentType: "permanent",
     duration: "",
     salaryType: "",
     salaryRate: "",
@@ -76,7 +81,8 @@ export default function PostJobPage() {
 
     if (!form.jobTitle.trim()) { toast.error("Job Title is required."); return; }
     if (!form.jobDescription.trim()) { toast.error("Job Description is required."); return; }
-    if (!form.location) { toast.error("Location is required."); return; }
+    if (!form.country) { toast.error("Country is required."); return; }
+    if (!form.city.trim()) { toast.error("City is required."); return; }
     if (!form.duration) { toast.error("Duration is required."); return; }
     if (!form.category) { toast.error("Category is required."); return; }
     if (!form.salaryType) { toast.error("Salary Type is required."); return; }
@@ -97,6 +103,9 @@ export default function PostJobPage() {
 
     setIsLoading(true);
     try {
+      const countryName =
+        COUNTRIES.find((c) => c.code === form.country)?.name ?? form.country;
+
       const res = await fetch("/api/jobs", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -104,7 +113,10 @@ export default function PostJobPage() {
           jobTitle: form.jobTitle.trim(),
           jobDescription: form.jobDescription.trim(),
           positions: positionsNum,
-          location: form.location,
+          location: `${form.city.trim()}, ${countryName}`,
+          country: form.country,
+          city: form.city.trim(),
+          employmentType: form.employmentType,
           duration: form.duration,
           salaryType: form.salaryType,
           salaryRate: salaryAmountRequired ? form.salaryRate.trim() : null,
@@ -197,18 +209,42 @@ export default function PostJobPage() {
               />
             </Field>
 
-            <Field label="Location *">
+            <Field label="Country *">
               <Select
-                value={form.location}
-                onValueChange={(v: string | null) => { if (v) set("location", v); }}
+                value={form.country}
+                onValueChange={(v: string | null) => { if (v) set("country", v); }}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select country" />
                 </SelectTrigger>
                 <SelectContent>
-                  {LOCATIONS.map((l) => (
-                    <SelectItem key={l} value={l}>{l}</SelectItem>
+                  {COUNTRIES.map((c) => (
+                    <SelectItem key={c.code} value={c.code}>{c.name}</SelectItem>
                   ))}
+                </SelectContent>
+              </Select>
+            </Field>
+
+            <Field label="City *">
+              <Input
+                placeholder="e.g. Dubai"
+                value={form.city}
+                onChange={(e) => set("city", e.target.value)}
+              />
+            </Field>
+
+            <Field label="Employment Type *">
+              <Select
+                value={form.employmentType}
+                onValueChange={(v: string | null) => { if (v) set("employmentType", v); }}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="permanent">Permanent</SelectItem>
+                  <SelectItem value="temporary">Temporary / Temp Job</SelectItem>
+                  <SelectItem value="task_force">Task Force</SelectItem>
                 </SelectContent>
               </Select>
             </Field>

@@ -42,7 +42,7 @@ export function HeroSection() {
         {/* Sub-heading */}
         <p className="mx-auto max-w-2xl text-lg sm:text-xl text-muted-foreground leading-relaxed">
           Whether you&apos;re searching for your next opportunity abroad or looking to hire
-          world-class talent — Expatriates 360 connects people and possibilities across every timezone.
+          world-class talent — Hunared connects people and possibilities across every timezone.
         </p>
 
         {/* CTA Buttons */}

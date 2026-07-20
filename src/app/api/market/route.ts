@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { createAdminClient } from "@/lib/supabase";
 import { LISTING_CATEGORIES } from "@/lib/constants";
+import { COUNTRIES } from "@/lib/countries";
 import type { ListingCategory, ListingStatus } from "@/types/database";
 
 const VALID_CATEGORIES = LISTING_CATEGORIES.map((c) => c.value);
@@ -21,12 +22,13 @@ async function getAutoApproveSetting(): Promise<boolean> {
   }
 }
 
-
-/** GET /api/market?category=&location=&search=&page= */
+/** GET /api/market?category=&subcategory=&country=&city=&search=&page= */
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const category = searchParams.get("category") ?? "";
-  const location = searchParams.get("location") ?? "";
+  const subcategory = searchParams.get("subcategory") ?? "";
+  const country = searchParams.get("country") ?? "";
+  const city = searchParams.get("city") ?? "";
   const search = searchParams.get("search") ?? "";
   const page = Math.max(1, parseInt(searchParams.get("page") ?? "1", 10));
   const limit = 12;
@@ -36,9 +38,10 @@ export async function GET(req: Request) {
 
   let query = supabase
     .from("marketplace_listings")
-    .select("id, title, price, currency, category, location, image_url, created_at", {
-      count: "exact",
-    })
+    .select(
+      "id, title, price, currency, category, subcategory, location, country, city, image_url, created_at",
+      { count: "exact" }
+    )
     .eq("status", "approved")
     .order("created_at", { ascending: false })
     .range(from, from + limit - 1);
@@ -46,7 +49,9 @@ export async function GET(req: Request) {
   if (category && VALID_CATEGORIES.includes(category as ListingCategory)) {
     query = query.eq("category", category as ListingCategory);
   }
-  if (location) query = query.eq("location", location);
+  if (subcategory) query = query.eq("subcategory", subcategory);
+  if (country) query = query.eq("country", country);
+  if (city) query = query.ilike("city", `%${city}%`);
   if (search) query = query.ilike("title", `%${search}%`);
 
   const { data, count, error } = await query;
@@ -66,6 +71,9 @@ export async function POST(req: Request) {
     price?: string;
     currency?: string;
     category?: string;
+    subcategory?: string;
+    country?: string;
+    city?: string;
     location?: string;
     contact_phone?: string;
     image_urls?: string[];
@@ -78,6 +86,10 @@ export async function POST(req: Request) {
   if (!body.price?.trim()) return NextResponse.json({ error: "Price is required" }, { status: 400 });
   if (!body.category || !VALID_CATEGORIES.includes(body.category as ListingCategory)) {
     return NextResponse.json({ error: "Invalid category" }, { status: 400 });
+  }
+  // Country is optional for listings, but if provided it must be a valid ISO code
+  if (body.country && !COUNTRIES.some((c) => c.code === body.country)) {
+    return NextResponse.json({ error: "Invalid country" }, { status: 400 });
   }
 
   const imageUrls = Array.isArray(body.image_urls) ? body.image_urls : [];
@@ -98,11 +110,13 @@ export async function POST(req: Request) {
       price: body.price.trim(),
       currency: body.currency ?? "USD",
       category: body.category as ListingCategory,
+      subcategory: body.subcategory?.trim() || null,
+      country: body.country || null,
+      city: body.city?.trim() || null,
       location: body.location?.trim() || null,
       contact_phone: body.contact_phone?.trim() || null,
       // Primary image kept for backward compat with grid/detail views
       image_url: primaryImageUrl,
-      // New columns
       image_urls: imageUrls,
       listing_type: body.listing_type ?? "standard",
       external_link: body.external_link?.trim() || null,

@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner";
 import { uploadToCloudinary } from "@/lib/cloudinary";
 import { cn } from "@/lib/utils";
-import { LOCATIONS, PROFESSIONS } from "@/lib/constants";
+import { PROFESSIONS } from "@/lib/constants";
 import type { Profile } from "@/types/database";
 
 export function ProfileEditForm({ initialProfile }: { initialProfile: Profile }) {
@@ -20,7 +20,6 @@ export function ProfileEditForm({ initialProfile }: { initialProfile: Profile })
   const [username, setUsername] = useState(initialProfile.username ?? "");
   const [phone, setPhone] = useState(initialProfile.phone ?? "");
   const [gender, setGender] = useState(initialProfile.gender ?? "");
-  const [location, setLocation] = useState(initialProfile.location ?? "");
   const [profession, setProfession] = useState(initialProfile.profession ?? "");
   const [companyCr, setCompanyCr] = useState(initialProfile.company_cr ?? "");
   const [companyWebsite, setCompanyWebsite] = useState(
@@ -54,7 +53,7 @@ export function ProfileEditForm({ initialProfile }: { initialProfile: Profile })
       if (avatarFile) {
         const { url, publicId } = await uploadToCloudinary(
           avatarFile,
-          "expatriates360/avatars"
+          "hunared/avatars"
         );
         avatarUrl = url;
         avatarPublicId = publicId;
@@ -81,7 +80,6 @@ export function ProfileEditForm({ initialProfile }: { initialProfile: Profile })
           username: username.trim() || null,
           phone: phone.trim() || null,
           gender: gender || null,
-          location: location || null,
           profession: isSeeker ? (profession || null) : null,
           avatarUrl,
           avatarPublicId,
@@ -202,9 +200,8 @@ export function ProfileEditForm({ initialProfile }: { initialProfile: Profile })
             <Select
               value={gender}
               
-              onValueChange={(v: string | null) => {
-                if (v) setGender(v);
-                
+              onValueChange={(v: any) => {
+                setGender(v);
               }}
               
             >
@@ -215,25 +212,6 @@ export function ProfileEditForm({ initialProfile }: { initialProfile: Profile })
                 <SelectItem value="male" className="cursor-pointer">Male</SelectItem>
                 <SelectItem value="female" className="cursor-pointer">Female</SelectItem>
                 <SelectItem value="prefer_not_to_say" className="cursor-pointer">Prefer not to say</SelectItem>
-              </SelectContent>
-            </Select>
-          </Field>
-          <Field label="Location">
-            <Select
-              value={location}
-              onValueChange={(v: string | null) => {
-                if (v) setLocation(v);
-              }}
-            >
-              <SelectTrigger className="cursor-pointer">
-                <SelectValue placeholder="Country" />
-              </SelectTrigger>
-              <SelectContent >
-                {LOCATIONS.map((l) => (
-                  <SelectItem key={l} value={l} className="cursor-pointer">
-                    {l}
-                  </SelectItem>
-                ))}
               </SelectContent>
             </Select>
           </Field>
@@ -249,8 +227,8 @@ export function ProfileEditForm({ initialProfile }: { initialProfile: Profile })
           <Field label="Profession">
             <Select
               value={profession}
-              onValueChange={(v: string | null) => {
-                if (v) setProfession(v);
+              onValueChange={(v: any) => {
+                setProfession(v);
               }}
             >
               <SelectTrigger className="cursor-pointer">

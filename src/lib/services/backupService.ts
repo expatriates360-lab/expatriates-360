@@ -136,7 +136,7 @@ async function sendBackupEmail(
     : "";
 
   await transporter.sendMail({
-    from: `"Expatriates 360 Backups" <${SMTP_USER}>`,
+    from: `"Hunared Backups" <${SMTP_USER}>`,
     to: BACKUP_EMAIL_TO,
     subject: `✅ Database backup complete — ${fileName}`,
     html: `
@@ -144,7 +144,7 @@ async function sendBackupEmail(
       <p>A new JSON snapshot was saved: <strong>${fileName}</strong></p>
       ${downloadLine}
       <p>The backup contains: profiles, jobs, marketplace listings, orders, articles, ad placements, and site settings.</p>
-      <p style="color:#888;font-size:12px">Expatriates 360 automated backup system</p>
+      <p style="color:#888;font-size:12px">Hunared automated backup system</p>
     `,
   });
 }

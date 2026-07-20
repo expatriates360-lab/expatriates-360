@@ -1,18 +1,20 @@
 import { createAdminClient } from "@/lib/supabase";
 import Link from "next/link";
-import { ShoppingBag, MapPin, Tag, ArrowRight } from "lucide-react";
+import { ShoppingBag, MapPin, ArrowRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   LISTING_CATEGORIES,
   LISTING_CATEGORY_COLORS,
-  LOCATIONS,
 } from "@/lib/constants";
+import { COUNTRIES } from "@/lib/countries";
 import type { Listing } from "@/types/database";
 
 interface SearchParams {
   category?: string;
-  location?: string;
+  subcategory?: string;
+  country?: string;
+  city?: string;
   search?: string;
   page?: string;
 }
@@ -24,7 +26,9 @@ export default async function MarketPage({
 }) {
   const sp = await searchParams;
   const category = sp.category ?? "";
-  const location = sp.location ?? "";
+  const subcategory = sp.subcategory ?? "";
+  const country = sp.country ?? "";
+  const city = sp.city ?? "";
   const search = sp.search ?? "";
   const page = Math.max(1, parseInt(sp.page ?? "1", 10));
   const limit = 12;
@@ -43,7 +47,9 @@ export default async function MarketPage({
       .range(from, from + limit - 1);
 
     if (category) query = query.eq("category", category as Listing["category"]);
-    if (location) query = query.eq("location", location);
+    if (subcategory) query = query.eq("subcategory", subcategory);
+    if (country) query = query.eq("country", country);
+    if (city) query = query.ilike("city", `%${city}%`);
     if (search) query = query.ilike("title", `%${search}%`);
 
     const { data, count } = await query;
@@ -55,6 +61,7 @@ export default async function MarketPage({
 
   const totalPages = Math.ceil(total / limit);
   const activeCat = LISTING_CATEGORIES.find((c) => c.value === category);
+  const activeCountry = COUNTRIES.find((c) => c.code === country);
 
   return (
     <div className="min-h-screen">
@@ -64,11 +71,11 @@ export default async function MarketPage({
           <div className="flex items-center gap-3 mb-3">
             <ShoppingBag className="h-7 w-7 text-primary" />
             <h1 className="text-3xl sm:text-4xl font-bold">
-              <span className="gradient-text">Expat Marketplace</span>
+              <span className="gradient-text">Hunared Marketplace</span>
             </h1>
           </div>
           <p className="text-muted-foreground max-w-xl">
-            Buy, sell, and find services within the expat community - accommodation, vehicles, electronics, and more.
+            Buy, sell, and find services worldwide - property, vehicles, electronics, services, and more.
           </p>
 
           {/* Filters */}
@@ -89,31 +96,42 @@ export default async function MarketPage({
                 defaultValue={category}
                 className="text-sm rounded-md border border-input bg-background px-2 py-2 focus:outline-none focus:ring-2 focus:ring-ring cursor-pointer"
               >
-                <option value="" className="cursor-pointer">All categories</option>
+                <option value="">All categories</option>
                 {LISTING_CATEGORIES.map((c) => (
-                  <option key={c.value} value={c.value} className="cursor-pointer">
+                  <option key={c.value} value={c.value}>
                     {c.label}
                   </option>
                 ))}
               </select>
             </div>
             <div>
-              <label className="text-xs text-muted-foreground mb-1 block">Location</label>
+              <label className="text-xs text-muted-foreground mb-1 block">Country</label>
               <select
-                name="location"
-                defaultValue={location}
-                className="text-sm rounded-md border border-input bg-background px-2 py-2 focus:outline-none focus:ring-2 focus:ring-ring cursor-pointer"
+                name="country"
+                defaultValue={country}
+                className="text-sm rounded-md border border-input bg-background px-2 py-2 focus:outline-none focus:ring-2 focus:ring-ring cursor-pointer max-w-[180px]"
               >
-                <option value="" className="cursor-pointer">All locations</option>
-                {LOCATIONS.map((l) => (
-                  <option key={l} value={l} className="cursor-pointer">
-                    {l}
+                <option value="">All countries</option>
+                {COUNTRIES.map((c) => (
+                  <option key={c.code} value={c.code}>
+                    {c.name}
                   </option>
                 ))}
               </select>
             </div>
-            <Button type="submit" size="lg" style={{cursor:"pointer"}}>Search</Button>
-            {(search || category || location) && (
+            <div>
+              <label className="text-xs text-muted-foreground mb-1 block">City</label>
+              <input
+                name="city"
+                defaultValue={city}
+                placeholder="e.g. Dubai"
+                className="w-32 px-3 py-2 text-sm rounded-md border border-input bg-background focus:outline-none focus:ring-2 focus:ring-ring"
+              />
+            </div>
+            {/* Preserve subcategory from Browse Categories links across searches */}
+            {subcategory && <input type="hidden" name="subcategory" value={subcategory} />}
+            <Button type="submit" size="lg" style={{ cursor: "pointer" }}>Search</Button>
+            {(search || category || subcategory || country || city) && (
               <Button variant="ghost" size="sm" asChild>
                 <Link href="/market">Clear</Link>
               </Button>
@@ -124,11 +142,13 @@ export default async function MarketPage({
 
       {/* Listings */}
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
-        {(search || activeCat || location) && (
+        {(search || activeCat || subcategory || country || city) && (
           <p className="text-sm text-muted-foreground mb-5">
             {total} listing{total !== 1 ? "s" : ""} found
             {activeCat && ` in ${activeCat.label}`}
-            {location && ` · ${location}`}
+            {subcategory && ` › ${subcategory}`}
+            {activeCountry && ` · ${activeCountry.name}`}
+            {city && ` · ${city}`}
             {search && ` matching "${search}"`}
           </p>
         )}
@@ -153,7 +173,7 @@ export default async function MarketPage({
               <div className="flex items-center justify-center gap-2 mt-10">
                 {page > 1 && (
                   <Button variant="outline" size="sm" asChild>
-                    <Link href={`/market?${buildParams({ category, location, search, page: page - 1 })}`}>
+                    <Link href={`/market?${buildParams({ category, subcategory, country, city, search, page: page - 1 })}`}>
                       Previous
                     </Link>
                   </Button>
@@ -163,7 +183,7 @@ export default async function MarketPage({
                 </span>
                 {page < totalPages && (
                   <Button variant="outline" size="sm" asChild>
-                    <Link href={`/market?${buildParams({ category, location, search, page: page + 1 })}`}>
+                    <Link href={`/market?${buildParams({ category, subcategory, country, city, search, page: page + 1 })}`}>
                       Next
                     </Link>
                   </Button>
@@ -245,13 +265,17 @@ function ListingCard({ listing }: { listing: Listing }) {
 
 function buildParams(p: {
   category: string;
-  location: string;
+  subcategory: string;
+  country: string;
+  city: string;
   search: string;
   page: number;
 }) {
   const params = new URLSearchParams();
   if (p.category) params.set("category", p.category);
-  if (p.location) params.set("location", p.location);
+  if (p.subcategory) params.set("subcategory", p.subcategory);
+  if (p.country) params.set("country", p.country);
+  if (p.city) params.set("city", p.city);
   if (p.search) params.set("search", p.search);
   if (p.page > 1) params.set("page", p.page.toString());
   return params.toString();

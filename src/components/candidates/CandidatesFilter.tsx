@@ -12,28 +12,26 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { useState, useCallback } from "react";
-import { PROFESSIONS, LOCATIONS } from "@/lib/constants";
+import { PROFESSIONS } from "@/lib/constants";
 
 export function CandidatesFilter({
   defaultSearch,
   defaultProfession,
-  defaultLocation,
 }: {
   defaultSearch: string;
   defaultProfession: string;
-  defaultLocation: string;
 }) {
   const router = useRouter();
   const [search, setSearch] = useState(defaultSearch);
   const [profession, setProfession] = useState(defaultProfession);
-  const [location, setLocation] = useState(defaultLocation);
 
   const apply = useCallback(
-    (s: string, p: string, l: string) => {
+    (s: string, p: string) => {
       const params = new URLSearchParams();
+
       if (s) params.set("search", s);
       if (p) params.set("profession", p);
-      if (l) params.set("location", l);
+
       router.push(`/candidates?${params.toString()}`);
     },
     [router]
@@ -48,24 +46,28 @@ export function CandidatesFilter({
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           onKeyDown={(e) => {
-            if (e.key === "Enter") apply(search, profession, location);
+            if (e.key === "Enter") apply(search, profession);
           }}
           className="pl-9"
         />
       </div>
+
       <Select
         value={profession}
-        onValueChange={(v: string | null) => {
-          const val = v ?? "";
-          setProfession(val);
-          apply(search, val, location);
+        onValueChange={(v: any) => {
+          setProfession(v);
+          apply(search, v);
         }}
       >
         <SelectTrigger className="sm:w-[200px] cursor-pointer">
           <SelectValue placeholder="All professions" />
         </SelectTrigger>
+
         <SelectContent>
-          <SelectItem value="" className="cursor-pointer">All professions</SelectItem>
+          <SelectItem value="all" className="cursor-pointer">
+            All professions
+          </SelectItem>
+
           {PROFESSIONS.map((p) => (
             <SelectItem key={p} value={p} className="cursor-pointer">
               {p}
@@ -73,43 +75,24 @@ export function CandidatesFilter({
           ))}
         </SelectContent>
       </Select>
-      <Select
-        value={location}
-        onValueChange={(v: string | null) => {
-          const val = v ?? "";
-          setLocation(val);
-          apply(search, profession, val);
-        }}
-      >
-        <SelectTrigger className="sm:w-[160px] cursor-pointer">
-          <SelectValue placeholder="All locations" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="" className="cursor-pointer">All locations</SelectItem>
-          {LOCATIONS.map((l) => (
-            <SelectItem key={l} value={l} className="cursor-pointer">
-              {l}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+
       <Button
         variant="outline"
-        onClick={() => apply(search, profession, location)}
-        className="sm:w-auto cursor-pointer"
+        onClick={() => apply(search, profession)}
+        className="cursor-pointer"
       >
         Search
       </Button>
-      {(search || profession || location) && (
+
+      {(search || (profession && profession !== "all")) && (
         <Button
           variant="ghost"
           onClick={() => {
             setSearch("");
-            setProfession("");
-            setLocation("");
+            setProfession("all");
             router.push("/candidates");
           }}
-          className="sm:w-auto cursor-pointer"
+          className="cursor-pointer"
         >
           Clear
         </Button>

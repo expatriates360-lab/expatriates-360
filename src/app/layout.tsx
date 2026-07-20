@@ -15,17 +15,33 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? "https://hunared.com"),
   title: {
-    default: "Expatriates 360 — Your Global Career & Lifestyle Hub",
-    template: "%s | Expatriates 360",
+    default: "Hunared — Global Jobs, Property, Marketplace & Learning",
+    template: "%s | Hunared",
   },
   description:
-    "Connect with jobs, employers, and fellow expats worldwide. The complete 360° portal for expatriates — jobs, candidates, marketplace, and education.",
-  keywords: ["expat jobs", "expatriates", "jobs abroad", "expat community", "international careers"],
+    "Hunared connects you with jobs, employers, property, marketplace deals, and learning opportunities worldwide. Your complete global workforce and lifestyle platform.",
+  keywords: [
+    "jobs", "global jobs", "jobs abroad", "temp work", "property for rent",
+    "marketplace", "courses", "certifications", "scholarships", "Hunared",
+  ],
+  alternates: {
+    canonical: "/",
+  },
   openGraph: {
-    title: "Expatriates 360",
-    description: "Your complete 360° expat career and lifestyle hub.",
+    title: "Hunared — Global Jobs, Property, Marketplace & Learning",
+    description:
+      "Find jobs, property, marketplace deals, and learning opportunities worldwide on Hunared.",
+    url: "/",
+    siteName: "Hunared",
     type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Hunared — Global Jobs, Property, Marketplace & Learning",
+    description:
+      "Find jobs, property, marketplace deals, and learning opportunities worldwide on Hunared.",
   },
 };
 

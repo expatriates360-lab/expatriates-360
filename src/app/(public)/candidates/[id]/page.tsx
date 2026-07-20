@@ -37,8 +37,8 @@ export async function generateMetadata({
       return {
         title: data.full_name,
         description: data.profession
-          ? `${data.full_name} — ${data.profession} on Expatriates 360`
-          : `${data.full_name}'s profile on Expatriates 360`,
+          ? `${data.full_name} — ${data.profession} on Hunared`
+          : `${data.full_name}'s profile on Hunared`,
       };
     }
   } catch { /* ignore */ }

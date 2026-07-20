@@ -8,6 +8,7 @@ export type Json =
 
 export type UserRole = "admin" | "employer" | "seeker";
 export type JobStatus = "pending" | "approved" | "rejected" | "draft" | "closed";
+export type EmploymentType = "permanent" | "temporary" | "task_force";
 export type ArticleStatus = "pending" | "approved";
 export type ArticleCategory = "safety_hse" | "engineering" | "career_tips";
 export type ListingStatus = "pending" | "approved" | "rejected";
@@ -34,6 +35,8 @@ export interface Database {
           phone: string | null;
           gender: string | null;
           location: string | null;
+          country: string | null;
+          city: string | null;
           profession: string | null;
           avatar_url: string | null;
           avatar_public_id: string | null;
@@ -53,6 +56,8 @@ export interface Database {
           phone?: string | null;
           gender?: string | null;
           location?: string | null;
+          country?: string | null;
+          city?: string | null;
           profession?: string | null;
           avatar_url?: string | null;
           avatar_public_id?: string | null;
@@ -72,6 +77,8 @@ export interface Database {
           phone?: string | null;
           gender?: string | null;
           location?: string | null;
+          country?: string | null;
+          city?: string | null;
           profession?: string | null;
           avatar_url?: string | null;
           avatar_public_id?: string | null;
@@ -92,6 +99,9 @@ export interface Database {
           job_description: string;
           positions: number | null;
           location: string;
+          country: string | null;
+          city: string | null;
+          employment_type: EmploymentType;
           duration: string;
           salary_rate: string | null;
           salary_type: string | null;
@@ -114,6 +124,9 @@ export interface Database {
           job_description: string;
           positions?: number | null;
           location: string;
+          country?: string | null;
+          city?: string | null;
+          employment_type?: EmploymentType;
           duration: string;
           salary_rate?: string | null;
           salary_type?: string | null;
@@ -136,6 +149,9 @@ export interface Database {
           job_description?: string;
           positions?: number | null;
           location?: string;
+          country?: string | null;
+          city?: string | null;
+          employment_type?: EmploymentType;
           duration?: string;
           salary_rate?: string | null;
           salary_type?: string | null;
@@ -160,6 +176,7 @@ export interface Database {
           title: string;
           content: string;
           category: ArticleCategory;
+          subcategory: string | null;
           status: ArticleStatus;
           created_at: string;
         };
@@ -169,6 +186,7 @@ export interface Database {
           title: string;
           content: string;
           category: ArticleCategory;
+          subcategory?: string | null;
           status?: ArticleStatus;
           created_at?: string;
         };
@@ -178,6 +196,7 @@ export interface Database {
           title?: string;
           content?: string;
           category?: ArticleCategory;
+          subcategory?: string | null;
           status?: ArticleStatus;
           created_at?: string;
         };
@@ -192,7 +211,10 @@ export interface Database {
           price: string;
           currency: string;
           category: ListingCategory;
+          subcategory: string | null;
           location: string | null;
+          country: string | null;
+          city: string | null;
           contact_phone: string | null;
           image_url: string | null;
           image_public_id: string | null;
@@ -210,7 +232,10 @@ export interface Database {
           price: string;
           currency?: string;
           category: ListingCategory;
+          subcategory?: string | null;
           location?: string | null;
+          country?: string | null;
+          city?: string | null;
           contact_phone?: string | null;
           image_url?: string | null;
           image_public_id?: string | null;
@@ -228,7 +253,10 @@ export interface Database {
           price?: string;
           currency?: string;
           category?: ListingCategory;
+          subcategory?: string | null;
           location?: string | null;
+          country?: string | null;
+          city?: string | null;
           contact_phone?: string | null;
           image_url?: string | null;
           image_public_id?: string | null;

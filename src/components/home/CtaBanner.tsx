@@ -17,7 +17,7 @@ export function CtaBanner() {
             <span className="gradient-text">Ready to Take the Next Step?</span>
           </h2>
           <p className="text-muted-foreground max-w-xl mx-auto text-lg mb-8">
-            Join thousands of expat professionals who found their dream role or perfect hire through Expatriates 360.
+            Join thousands of expat professionals who found their dream role or perfect hire through Hunared.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Button

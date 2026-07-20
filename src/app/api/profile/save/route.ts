@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { createAdminClient } from "@/lib/supabase";
+import { COUNTRIES } from "@/lib/countries";
 import type { UserRole } from "@/types/database";
 
 interface SaveProfileBody {
@@ -10,6 +11,8 @@ interface SaveProfileBody {
   phone?: string | null;
   gender?: string | null;
   location?: string | null;
+  country?: string | null;
+  city?: string | null;
   profession?: string | null;
   avatarUrl?: string | null;
   avatarPublicId?: string | null;
@@ -42,6 +45,11 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Invalid role" }, { status: 400 });
   }
 
+  // Country is optional, but if provided it must be a valid ISO code
+  if (body.country && !COUNTRIES.some((c) => c.code === body.country)) {
+    return NextResponse.json({ error: "Invalid country" }, { status: 400 });
+  }
+
   const user = await currentUser();
   const email = user?.emailAddresses[0]?.emailAddress ?? "";
 
@@ -56,6 +64,8 @@ export async function POST(req: Request) {
     phone: body.phone?.trim() ?? null,
     gender: body.gender ?? null,
     location: body.location ?? null,
+    country: body.country ?? null,
+    city: body.city?.trim() ?? null,
     profession: body.profession ?? null,
     avatar_url: body.avatarUrl ?? null,
     avatar_public_id: body.avatarPublicId ?? null,

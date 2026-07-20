@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import { uploadToCloudinary } from "@/lib/cloudinary";
+import { COUNTRIES } from "@/lib/countries";
 import { toast } from "sonner";
 import Image from "next/image";
 
@@ -27,6 +28,8 @@ interface FormData {
   phone: string;
   gender: string;
   location: string;
+  country: string;
+  city: string;
   // Seeker only
   profession: string;
   avatarFile: File | null;
@@ -63,7 +66,7 @@ export default function RegisterPage() {
 
   const [form, setForm] = useState<FormData>({
     email: "", password: "", fullName: "", username: "", phone: "",
-    gender: "", location: "", profession: "", avatarFile: null,
+    gender: "", location: "", country: "", city: "", profession: "", avatarFile: null,
     avatarPreview: "", cvFile: null, companyCr: "", companyWebsite: "",
     companyAddress: "", code: "",
   });
@@ -122,7 +125,7 @@ export default function RegisterPage() {
       if (form.avatarFile) {
         const { url, publicId } = await uploadToCloudinary(
           form.avatarFile,
-          "expatriates360/avatars"
+          "hunared/avatars"
         );
         avatarUrl = url;
         avatarPublicId = publicId;
@@ -132,7 +135,7 @@ export default function RegisterPage() {
       if (form.cvFile && goal === "seeker") {
         const { url } = await uploadToCloudinary(
           form.cvFile,
-          "expatriates360/cvs",
+          "hunared/cvs",
           {
             preset: process.env.NEXT_PUBLIC_CLOUDINARY_DOCS_PRESET,
             resourceType: "auto",
@@ -151,7 +154,9 @@ export default function RegisterPage() {
           username: form.username,
           phone: form.phone,
           gender: form.gender,
-          location: form.location,
+          location: [form.city.trim(), COUNTRIES.find((c) => c.code === form.country)?.name ?? ""].filter(Boolean).join(", "),
+          country: form.country || null,
+          city: form.city.trim() || null,
           profession: goal === "seeker" ? form.profession : null,
           avatarUrl,
           avatarPublicId,
@@ -164,7 +169,7 @@ export default function RegisterPage() {
 
       if (!res.ok) throw new Error("Profile save failed");
 
-      toast.success("Profile created! Welcome to Expatriates 360.");
+      toast.success("Profile created! Welcome to Hunared.");
       router.push(goal === "seeker" ? "/candidates" : "/jobs");
     } catch (err: unknown) {
       toast.error((err as Error).message ?? "Something went wrong.");
@@ -186,8 +191,9 @@ export default function RegisterPage() {
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-2">
               <Image
-                src="/assets/logo new.png"
-                alt="Expatriates 360"
+                // src="/assets/logos/logo-horizontal.png"
+                src="/assets/logos/logo-horizontal.png"
+                alt="Hunared"
                 width={160}
                 height={48}
                 className="h-12 w-auto object-contain"
@@ -197,11 +203,11 @@ export default function RegisterPage() {
         </div>
 
         {/* ── STEP: Goal ── */}
-        {step === "goal" && (
+        {step === "goal" && ( 
           <div className="space-y-6 text-center">
             <div>
               <h1 className="text-2xl font-bold text-foreground">What&apos;s your goal?</h1>
-              <p className="text-muted-foreground mt-1 text-sm">Choose how you want to use Expatriates 360</p>
+              <p className="text-muted-foreground mt-1 text-sm">Choose how you want to use Hunared</p>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <GoalCard
@@ -389,13 +395,16 @@ export default function RegisterPage() {
                     </SelectContent>
                   </Select>
                 </Field>
-                <Field label="Location">
-                  <Select onValueChange={(v: string | null) => { if (v) set("location", v); }}>
+                <Field label="Country">
+                  <Select onValueChange={(v: string | null) => { if (v) set("country", v); }}>
                     <SelectTrigger><SelectValue placeholder="Country" /></SelectTrigger>
                     <SelectContent>
-                      {LOCATIONS.map((l) => <SelectItem key={l} value={l}>{l}</SelectItem>)}
+                      {COUNTRIES.map((c) => <SelectItem key={c.code} value={c.code}>{c.name}</SelectItem>)}
                     </SelectContent>
                   </Select>
+                </Field>
+                <Field label="City">
+                  <Input placeholder="e.g. Dubai" value={form.city} onChange={(e) => set("city", e.target.value)} />
                 </Field>
                 <Field label="Profession" className="col-span-2">
                   <Select onValueChange={(v: string | null) => { if (v) set("profession", v); }}>
@@ -478,13 +487,16 @@ export default function RegisterPage() {
                     </SelectContent>
                   </Select>
                 </Field>
-                <Field label="Location">
-                  <Select onValueChange={(v: string | null) => { if (v) set("location", v); }}>
+                <Field label="Country">
+                  <Select onValueChange={(v: string | null) => { if (v) set("country", v); }}>
                     <SelectTrigger><SelectValue placeholder="Country" /></SelectTrigger>
                     <SelectContent>
-                      {LOCATIONS.map((l) => <SelectItem key={l} value={l}>{l}</SelectItem>)}
+                      {COUNTRIES.map((c) => <SelectItem key={c.code} value={c.code}>{c.name}</SelectItem>)}
                     </SelectContent>
                   </Select>
+                </Field>
+                <Field label="City">
+                  <Input placeholder="e.g. Dubai" value={form.city} onChange={(e) => set("city", e.target.value)} />
                 </Field>
                 <Field label="Company CR Number" className="col-span-2">
                   <Input placeholder="e.g. 1010123456" value={form.companyCr} onChange={(e) => set("companyCr", e.target.value)} />

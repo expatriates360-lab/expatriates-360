@@ -70,9 +70,8 @@ async function shouldAutoApproveArticles(): Promise<boolean> {
 export async function POST(req: Request) {
   const { userId } = await auth();
   if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-
-  const body: { title?: string; content?: string; category?: string; recaptchaToken?: string } = await req.json();
-
+  
+  const body: { title?: string; content?: string; category?: string; subcategory?: string; recaptchaToken?: string } = await req.json();
   // ── reCAPTCHA verification (must pass before any DB work) ──
   const tokenOk = await verifyRecaptcha(body.recaptchaToken ?? "");
   if (!tokenOk) {
@@ -96,6 +95,7 @@ export async function POST(req: Request) {
       title: body.title.trim(),
       content: body.content.trim(),
       category: body.category as ArticleCategory,
+      subcategory: body.subcategory?.trim() || null,
       status: autoApprove ? "approved" : "pending",
     })
     .select()
