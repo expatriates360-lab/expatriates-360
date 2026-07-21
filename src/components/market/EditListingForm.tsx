@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { ImagePlus, X, Loader2, Link2 } from "lucide-react";
-import { LISTING_CATEGORIES, LISTING_CURRENCIES, LOCATIONS } from "@/lib/constants";
+import { LISTING_CATEGORIES, LISTING_CURRENCIES } from "@/lib/constants";
 import type { Listing } from "@/types/database";
 
 const RichTextEditor = dynamic(
@@ -266,11 +266,11 @@ export function EditListingForm({ listing }: { listing: Listing }) {
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select location..." />
                 </SelectTrigger>
-                <SelectContent>
+                {/* <SelectContent> 
                   {LOCATIONS.map((l) => (
                     <SelectItem key={l} value={l}>{l}</SelectItem>
                   ))}
-                </SelectContent>
+                </SelectContent> */}
               </Select>
             </div>
           </div>

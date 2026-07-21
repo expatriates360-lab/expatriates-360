@@ -15,7 +15,7 @@ export async function GET() {
 
   const supabase = createAdminClient();
   const { data, error } = await supabase
-    .from("saved_jobs")
+    .from("saved_jobs" as any)
     .select("id, job_id, created_at, jobs ( id, job_title, company_name, location, category, salary_rate, status )")
     .eq("user_id", userId)
     .order("created_at", { ascending: false });
@@ -37,7 +37,7 @@ export async function POST(req: Request) {
 
   const supabase = createAdminClient();
   const { error } = await supabase
-    .from("saved_jobs")
+    .from("saved_jobs" as any)
     .upsert(
       { user_id: userId, job_id: body.jobId },
       { onConflict: "user_id,job_id", ignoreDuplicates: true }
@@ -56,7 +56,7 @@ export async function DELETE(req: Request) {
 
   const supabase = createAdminClient();
   const { error } = await supabase
-    .from("saved_jobs")
+    .from("saved_jobs" as any)
     .delete()
     .eq("user_id", userId)
     .eq("job_id", body.jobId);

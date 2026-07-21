@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { JOB_CATEGORIES, LOCATIONS, DURATIONS, SALARY_TYPES } from "@/lib/constants";
+import { JOB_CATEGORIES, DURATIONS, SALARY_TYPES } from "@/lib/constants";
 import type { OfficeLocation } from "@/components/jobs/OfficeLocationPicker";
 import type { Job } from "@/types/database";
 import Link from "next/link";
@@ -216,11 +216,11 @@ export function EditJobForm({ job }: { job: Job }) {
                 <SelectTrigger>
                   <SelectValue placeholder="Select country" />
                 </SelectTrigger>
-                <SelectContent>
+                {/* <SelectContent>
                   {LOCATIONS.map((l) => (
                     <SelectItem key={l} value={l}>{l}</SelectItem>
                   ))}
-                </SelectContent>
+                </SelectContent> */}
               </Select>
             </Field>
 

@@ -81,7 +81,7 @@ export default async function CandidatesPage({
           <CandidatesFilter
             defaultSearch={search}
             defaultProfession={profession}
-            defaultLocation={location}
+            // defaultLocation={location}
           />
         </div>
       </section>
