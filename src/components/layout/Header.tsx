@@ -64,36 +64,6 @@ const NAV_ITEMS: NavItem[] = [
   { type: "link", href: "/contact", label: "Contact" },
 ];
 
-function FacebookIcon(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
-      <path d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06c0 5 3.66 9.15 8.44 9.94v-7.03H7.9v-2.9h2.54V9.85c0-2.5 1.49-3.89 3.77-3.89 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56v1.88h2.78l-.44 2.9h-2.34V22c4.78-.79 8.44-4.94 8.44-9.94Z"/>
-    </svg>
-  );
-}
-
-function LinkedinIcon(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
-      <path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.34V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.38-1.85 3.61 0 4.28 2.38 4.28 5.47v6.27ZM5.34 7.43a2.07 2.07 0 1 1 0-4.13 2.07 2.07 0 0 1 0 4.13ZM7.12 20.45H3.56V9h3.56v11.45Z"/>
-    </svg>
-  );
-}
-
-function XIcon(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
-      <path d="M18.9 2H22l-7.5 8.57L23.3 22H16.7l-5.16-6.75L5.6 22H2.5l8.03-9.17L1.5 2h6.8l4.66 6.17L18.9 2Zm-1.18 18.17h1.72L7.36 3.75H5.5l12.22 16.42Z"/>
-    </svg>
-  );
-}
-
-const SOCIAL_LINKS = [
-  { icon: FacebookIcon, href: "https://facebook.com/hunared", label: "Facebook" },
-  { icon: LinkedinIcon, href: "https://linkedin.com/company/hunared", label: "LinkedIn" },
-  { icon: XIcon, href: "https://x.com/hunared", label: "X (Twitter)" },
-];
-
 export function Header() {
   const pathname = usePathname();
   const router = useRouter();
@@ -267,22 +237,6 @@ export function Header() {
 
           {/* Right Actions */}
           <div className="flex items-center gap-2 shrink-0">
-            {/* Social links (desktop only, not scrolled — saves space when compact) */}
-            <div className="hidden xl:flex items-center gap-1 mr-1 border-r border-border/50 pr-2">
-              {SOCIAL_LINKS.map(({ icon: Icon, href, label }) => (
-                <a
-                  key={label}
-                  href={href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={label}
-                  className="h-8 w-8 flex items-center justify-center rounded-full text-muted-foreground hover:text-primary hover:bg-primary/8 transition-colors"
-                >
-                  <Icon className="h-4 w-4" />
-                </a>
-              ))}
-            </div>
-
             {/* Post an Ad (desktop) */}
             <Button
               size="sm"
@@ -428,22 +382,6 @@ export function Header() {
               </details>
             );
           })}
-
-          {/* Social links (mobile) */}
-          <div className="flex items-center gap-2 px-3 pt-2">
-            {SOCIAL_LINKS.map(({ icon: Icon, href, label }) => (
-              <a
-                key={label}
-                href={href}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={label}
-                className="h-8 w-8 flex items-center justify-center rounded-full text-muted-foreground hover:text-primary hover:bg-primary/8 transition-colors"
-              >
-                <Icon className="h-4 w-4" />
-              </a>
-            ))}
-          </div>
 
           <div className="flex gap-2 pt-2 border-t border-border/40">
             <Show when="signed-out">
