@@ -26,7 +26,7 @@ export function HeroSection() {
         {/* Badge */}
         <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/8 px-4 py-1.5 text-xs font-medium text-primary">
           <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
-          The Global Expat Career &amp; Lifestyle Hub
+          The Global Hunared Career &amp; Lifestyle Hub
         </div>
 
         {/* Headline */}

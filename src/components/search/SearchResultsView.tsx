@@ -72,6 +72,7 @@ type TabKey = "all" | "jobs" | "candidates" | "listings" | "articles";
 export function SearchResultsView({ query, country, city, results }: Props) {
   const router = useRouter();
   const geo = useGeoDetection();
+  const [keyword, setKeyword] = useState(query);
   const [cityInput, setCityInput] = useState(city);
   const [tab, setTab] = useState<TabKey>("all");
   const totalCount =
@@ -80,11 +81,25 @@ export function SearchResultsView({ query, country, city, results }: Props) {
     results.listings.length +
     results.articles.length;
 
-  function updateFilters(newCountry: string, newCity: string) {
+  function updateFilters(
+    newKeyword: string,
+    newCountry: string,
+    newCity: string
+  ) {
     const params = new URLSearchParams();
-    if (query) params.set("q", query);
-    if (newCountry) params.set("country", newCountry);
-    if (newCity.trim()) params.set("city", newCity.trim());
+
+    if (newKeyword.trim()) {
+      params.set("q", newKeyword.trim());
+    }
+
+    if (newCountry) {
+      params.set("country", newCountry);
+    }
+
+    if (newCity.trim()) {
+      params.set("city", newCity.trim());
+    }
+
     router.push(`/search?${params.toString()}`);
   }
 
@@ -98,88 +113,70 @@ export function SearchResultsView({ query, country, city, results }: Props) {
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-2xl font-bold">
-          {query ? <>Search results for &ldquo;{query}&rdquo;</> : <>Search Hunared</>}
+      <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
+        <h1 className="text-3xl font-bold mb-2">
+          Universal Search
         </h1>
-        <p className="text-muted-foreground text-sm mt-1">
-          {query
-            ? `${totalCount} result${totalCount === 1 ? "" : "s"} found across jobs, candidates, marketplace, and learning hub.`
-            : "Enter a search term above to find jobs, candidates, property, marketplace listings, and courses."}
-        </p>
-      </div>
 
-      {/* Location filters + auto-detection + currency note */}
-      <div className="flex flex-wrap items-center gap-3">
-        {/* Country dropdown */}
-        <div className="relative">
-          <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+        <p className="text-muted-foreground mb-6">
+          Search across Jobs, Candidates, Marketplace and Learning Hub.
+        </p>
+
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            updateFilters(keyword, country, cityInput);
+          }}
+          className="grid gap-4 md:grid-cols-4"
+        >
+          <input
+            type="text"
+            value={keyword}
+            onChange={(e) => setKeyword(e.target.value)}
+            placeholder="Search..."
+            className="h-11 rounded-lg border border-input px-4"
+          />
+
           <select
             value={country}
-            onChange={(e) => updateFilters(e.target.value, cityInput)}
-            aria-label="Filter by country"
-            className="h-9 pl-9 pr-8 rounded-full border border-input bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 transition appearance-none cursor-pointer"
+            onChange={(e) => updateFilters(keyword, e.target.value, cityInput)}
+            className="h-11 rounded-lg border border-input bg-background text-foreground px-3 focus:outline-none focus:ring-2 focus:ring-primary/40"
           >
-            <option value="" className="bg-background text-foreground">All Countries</option>
+            <option
+              value=""
+              className="bg-background text-foreground"
+            >
+              All Countries
+            </option>
+
             {COUNTRIES.map((c) => (
-              <option key={c.code} value={c.code} className="bg-background text-foreground">
+              <option
+                key={c.code}
+                value={c.code}
+                className="bg-background text-foreground"
+              >
                 {c.name}
               </option>
             ))}
           </select>
-        </div>
 
-        {/* City input — press Enter to apply */}
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            updateFilters(country, cityInput);
-          }}
-          className="relative"
-        >
           <input
             type="text"
             value={cityInput}
             onChange={(e) => setCityInput(e.target.value)}
-            placeholder="Filter by city..."
-            aria-label="Filter by city"
-            className="h-9 px-3 rounded-full border border-input bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 transition w-40"
+            placeholder="City"
+            className="h-11 rounded-lg border border-input px-4"
           />
+          
+          <button
+            type="submit"
+            className="h-11 rounded-lg bg-primary text-primary-foreground font-medium hover:opacity-90"
+          >
+            Search
+          </button>
         </form>
-
-        {(country || city) && (
-          <button
-            type="button"
-            onClick={() => {
-              setCityInput("");
-              updateFilters("", "");
-            }}
-            className="flex items-center gap-1 text-xs text-muted-foreground hover:text-primary transition-colors"
-          >
-            <X className="h-3 w-3" /> Clear filters
-          </button>
-        )}
-
-        {!country && !geo.loading && geo.countryCode && (
-          <button
-            type="button"
-            onClick={() => updateFilters(geo.countryCode!, "")}
-            className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full bg-primary/8 text-primary hover:bg-primary/15 transition-colors"
-          >
-            <MapPin className="h-3 w-3" />
-            Show results near {geo.city ? `${geo.city}, ` : ""}
-            {geo.countryName}
-          </button>
-        )}
-
-        {/* Detected currency note */}
-        {!geo.loading && geo.currency && (
-          <span className="text-xs text-muted-foreground ml-auto">
-            Browsing from {geo.countryName} &bull; local currency {geo.currency}
-          </span>
-        )}
       </div>
-
+      
       {/* Tabs */}
       <div className="flex flex-wrap gap-2 border-b border-border pb-2">
         {TABS.map(({ key, label, icon: Icon, count }) => (

@@ -123,22 +123,15 @@ export function Header() {
             className="flex items-center gap-2.5 group shrink-0"
             aria-label="Hunared home"
           >
-            <Image
+           <Image
               src="/assets/logos/logo-horizontal.png"
               alt="Hunared"
-              width={250}
-              height={38}
+              width={380}
+              height={70}
               quality={100}
-              priority={true}
-              unoptimized={true}
-              className="h-[29px] w-auto object-contain"
-              style={{
-                height: "46px",
-                width: "auto",
-                marginLeft: "10px",
-                marginTop: "5px",
-                transform: "scale(1.1)",
-              }}
+              priority
+              unoptimized
+              className="h-16 md:h-20 w-auto object-contain ml-3 mt-n4"
             />
           </Link>
 

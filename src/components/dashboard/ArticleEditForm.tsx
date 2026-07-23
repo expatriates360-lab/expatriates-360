@@ -74,7 +74,7 @@ export function ArticleEditForm({ article }: { article: Article }) {
               <input
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                placeholder="e.g. 5 Essential Safety Practices for Expat Workers"
+                placeholder="e.g. 5 Essential Safety Practices for Hunared Workers"
                 maxLength={120}
                 className="w-full px-3 py-2 text-sm rounded-md border border-input bg-background focus:outline-none focus:ring-2 focus:ring-ring"
               />

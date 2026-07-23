@@ -191,7 +191,18 @@ export default async function JobDetailPage({
                   <Detail icon={<MapPin className="h-4 w-4" />} label="Address" value={job.company_address} />
                 )}
                 {job.company_phone && (
-                  <Detail icon={<Phone className="h-4 w-4" />} label="Phone" value={job.company_phone} />
+                  <div className="flex items-start gap-2.5">
+                    <Phone className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
+                    <div>
+                      <p className="text-xs text-muted-foreground">Phone</p>
+                      <a
+                        href={`tel:${job.company_phone.replace(/\s+/g, "")}`}
+                        className="text-sm text-primary hover:underline"
+                      >
+                        {job.company_phone}
+                      </a>
+                    </div>
+                  </div>
                 )}
                 {job.company_email && (
                   <div className="flex items-start gap-2.5">

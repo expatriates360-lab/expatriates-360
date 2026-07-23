@@ -214,9 +214,12 @@ function SidebarContent({
           <Image
             src="/assets/logos/logo-horizontal.png"
             alt="Hunared"
-            width={130}
-            height={36}
-            className="h-8 w-auto object-contain"
+            width={380}
+            height={70}
+            quality={100}
+            priority
+            unoptimized
+            className="h-16 md:h-20 w-auto object-contain ml-3 mt-n4"
           />
         </Link>
       </div>

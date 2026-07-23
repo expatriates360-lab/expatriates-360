@@ -191,13 +191,14 @@ export default function RegisterPage() {
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-2">
               <Image
-                // src="/assets/logos/logo-horizontal.png"
                 src="/assets/logos/logo-horizontal.png"
                 alt="Hunared"
-                width={160}
-                height={48}
-                className="h-12 w-auto object-contain"
+                width={380}
+                height={70}
+                quality={100}
                 priority
+                unoptimized
+                className="h-16 md:h-20 w-auto object-contain ml-3 mt-n4"
               />
             </Link>
         </div>

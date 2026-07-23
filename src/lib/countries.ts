@@ -113,7 +113,6 @@ export const COUNTRIES: Country[] = [
   { code: "IQ", name: "Iraq", currency: "IQD" },
   { code: "IE", name: "Ireland", currency: "EUR" },
   { code: "IM", name: "Isle of Man", currency: "GBP" },
-  { code: "IL", name: "Israel", currency: "ILS" },
   { code: "IT", name: "Italy", currency: "EUR" },
   { code: "JM", name: "Jamaica", currency: "JMD" },
   { code: "JP", name: "Japan", currency: "JPY" },
@@ -174,7 +173,7 @@ export const COUNTRIES: Country[] = [
   { code: "OM", name: "Oman", currency: "OMR" },
   { code: "PK", name: "Pakistan", currency: "PKR" },
   { code: "PW", name: "Palau", currency: "USD" },
-  { code: "PS", name: "Palestine, State of", currency: "ILS" },
+  { code: "PS", name: "Palestine", currency: "ILS" },
   { code: "PA", name: "Panama", currency: "PAB" },
   { code: "PG", name: "Papua New Guinea", currency: "PGK" },
   { code: "PY", name: "Paraguay", currency: "PYG" },
@@ -246,14 +245,11 @@ export const COUNTRIES: Country[] = [
   { code: "VU", name: "Vanuatu", currency: "VUV" },
   { code: "VE", name: "Venezuela, Bolivarian Republic of", currency: "VES" },
   { code: "VN", name: "Viet Nam", currency: "VND" },
-  { code: "VG", name: "Virgin Islands, British", currency: "USD" },
-  { code: "VI", name: "Virgin Islands, U.S.", currency: "USD" },
   { code: "WF", name: "Wallis and Futuna", currency: "XPF" },
   { code: "EH", name: "Western Sahara", currency: "MAD" },
   { code: "YE", name: "Yemen", currency: "YER" },
   { code: "ZM", name: "Zambia", currency: "ZMW" },
   { code: "ZW", name: "Zimbabwe", currency: "USD" },
-  { code: "AX", name: "Åland Islands", currency: "EUR" },
 ];
 
 export function getCountryByCode(code: string): Country | undefined {

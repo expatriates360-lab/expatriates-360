@@ -23,10 +23,18 @@ const FOOTER_LINKS = {
 };
 
 const SOCIAL_LINKS = [
-  { href: "#", label: "in" },
-  { href: "#", label: "𝕏" },
-  { href: "#", label: "fb" },
-  { href: "#", label: "ig" },
+  {
+    href: "https://www.linkedin.com/in/hunaredorganization",
+    label: "in",
+  },
+  {
+    href: "https://x.com/HunaredOrg",
+    label: "𝕏",
+  },
+  {
+    href: "https://www.facebook.com/HunaredOrganization/",
+    label: "fb",
+  },
 ];
 
 export function Footer() {
@@ -40,9 +48,12 @@ export function Footer() {
               <Image
                 src="/assets/logos/logo-horizontal.png"
                 alt="Hunared"
-                width={140}
-                height={40}
-                className="h-10 w-auto object-contain"
+                width={380}
+                height={70}
+                quality={100}
+                priority
+                unoptimized
+                className="h-16 md:h-20 w-auto object-contain ml-3 mt-n4"
               />
             </Link>
             <p className="text-sm text-muted-foreground max-w-xs leading-relaxed">
@@ -53,6 +64,8 @@ export function Footer() {
                 <a
                   key={label}
                   href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   aria-label={label}
                   className="flex h-8 w-8 items-center justify-center rounded-lg border border-border text-muted-foreground text-xs font-bold hover:text-primary hover:border-primary/50 hover:bg-primary/8 transition-colors duration-200"
                 >

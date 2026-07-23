@@ -23,7 +23,7 @@ const features = [
   },
   {
     icon: ShoppingBag,
-    title: "Expat Marketplace",
+    title: "Hunared Marketplace",
     description:
       "Buy, sell, or advertise services within the expat community — from accommodation to electronics.",
   },
@@ -60,12 +60,12 @@ export default function AboutPage() {
         <SiteContainer className="relative text-center animate-in fade-in slide-in-from-bottom-6 duration-700">
           <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-xs font-medium text-primary mb-6">
             <Globe className="h-3.5 w-3.5" />
-            Built for the Global Expat
+            Built for the Global Hunared
           </div>
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight mb-6 leading-tight">
             Your Complete{" "}
             <span className="gradient-text">360° Platform</span>
-            <br className="hidden sm:block" /> for Expat Life
+            <br className="hidden sm:block" /> for Hunared Life
           </h1>
           <p className="mx-auto max-w-2xl text-lg text-muted-foreground leading-relaxed">
             Hunared brings together everything an expat needs — career

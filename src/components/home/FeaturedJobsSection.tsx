@@ -82,7 +82,7 @@ export async function FeaturedJobsSection() {
                     </span>
                     <span className="flex items-center gap-1.5">
                       <DollarSign className="h-3.5 w-3.5 text-primary/60 shrink-0" />
-                      {job.salary_rate}
+                      {job.salary_rate ?? 'To Be Discuss'}
                     </span>
                     <span className="flex items-center gap-1.5">
                       <Clock className="h-3.5 w-3.5 text-primary/60 shrink-0" />

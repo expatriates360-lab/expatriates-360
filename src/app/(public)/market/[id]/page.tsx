@@ -127,7 +127,7 @@ export default async function ListingDetailPage({
                 <User className="h-4 w-4 text-muted-foreground" />
               </div>
               <div>
-                <p className="text-sm font-medium">{seller?.full_name ?? "Expat community member"}</p>
+                <p className="text-sm font-medium">{seller?.full_name ?? "Hunared community member"}</p>
                 {seller?.location && (
                   <p className="text-xs text-muted-foreground">{seller.location}</p>
                 )}

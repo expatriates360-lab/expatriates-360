@@ -5,24 +5,24 @@ import { Mail, MapPin, MessageCircle, Send, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 const contactInfo = [
-  {
-    icon: Mail,
-    label: "Email",
-    value: "hunaredofficial@gmail.com",
-    href: "mailto:hunaredofficial@gmail.com",
-  },
+  // {
+  //   icon: Mail,
+  //   label: "Email",
+  //   value: "hunaredofficial@gmail.com",
+  //   href: "mailto:hunaredofficial@gmail.com",
+  // },
   {
     icon: MapPin,
     label: "Location",
     value: "Serving expats worldwide",
     href: null,
   },
-  {
-    icon: MessageCircle,
-    label: "WhatsApp",
-    value: "053-5048401",
-    href: "https://wa.me/0535048401",
-  },
+  // {
+  //   icon: MessageCircle,
+  //   label: "WhatsApp",
+  //   value: "053-5048401",
+  //   href: "https://wa.me/0535048401",
+  // },
 ];
 
 export function ContactContent() {
