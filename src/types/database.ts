@@ -38,6 +38,7 @@ export interface Database {
           country: string | null;
           city: string | null;
           profession: string | null;
+          job_interests: string[] | null;
           avatar_url: string | null;
           avatar_public_id: string | null;
           cv_url: string | null;
@@ -59,6 +60,7 @@ export interface Database {
           country?: string | null;
           city?: string | null;
           profession?: string | null;
+          job_interests?: string[] | null;
           avatar_url?: string | null;
           avatar_public_id?: string | null;
           cv_url?: string | null;
@@ -80,6 +82,7 @@ export interface Database {
           country?: string | null;
           city?: string | null;
           profession?: string | null;
+          job_interests?: string[] | null;
           avatar_url?: string | null;
           avatar_public_id?: string | null;
           cv_url?: string | null;

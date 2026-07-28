@@ -14,6 +14,7 @@ interface SaveProfileBody {
   country?: string | null;
   city?: string | null;
   profession?: string | null;
+  jobInterests?: string[] | null;
   avatarUrl?: string | null;
   avatarPublicId?: string | null;
   cvUrl?: string | null;
@@ -23,9 +24,8 @@ interface SaveProfileBody {
 }
 
 export async function POST(req: Request) {
-
   console.log("==== SAVE PROFILE API CALLED ====");
-  
+
   const { userId } = await auth();
   console.log("User ID:", userId);
   if (!userId) {
@@ -40,7 +40,10 @@ export async function POST(req: Request) {
   }
 
   if (!body.fullName?.trim() || !body.role) {
-    return NextResponse.json({ error: "fullName and role are required" }, { status: 400 });
+    return NextResponse.json(
+      { error: "fullName and role are required" },
+      { status: 400 }
+    );
   }
 
   // Validate role
@@ -71,6 +74,7 @@ export async function POST(req: Request) {
     country: body.country ?? null,
     city: body.city?.trim() ?? null,
     profession: body.profession ?? null,
+    job_interests: body.jobInterests ?? [],
     avatar_url: body.avatarUrl ?? null,
     avatar_public_id: body.avatarPublicId ?? null,
     cv_url: body.cvUrl ?? null,
@@ -80,8 +84,21 @@ export async function POST(req: Request) {
   });
 
   if (error) {
-    console.error("[profile/save] Supabase error:", error.message);
-    return NextResponse.json({ error: "Failed to save profile" }, { status: 500 });
+    console.error("[profile/save] Supabase error:", error);
+
+    // Detect duplicate email (PostgreSQL unique violation code 23505)
+    if (error.code === "23505" && error.message.includes("profiles_email_key")) {
+      return NextResponse.json(
+        { error: "This email is already registered. Please sign in instead." },
+        { status: 409 }
+      );
+    }
+
+    // Other errors
+    return NextResponse.json(
+      { error: "Failed to save profile. Please try again." },
+      { status: 500 }
+    );
   }
 
   return NextResponse.json({ success: true });

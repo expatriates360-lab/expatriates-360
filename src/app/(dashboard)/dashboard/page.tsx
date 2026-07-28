@@ -39,7 +39,6 @@ export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
   const { userId } = await auth();
-  console.log("Clerk User ID:", userId);
   if (!userId) redirect("/sign-in");
 
   const supabase = createAdminClient();
@@ -49,13 +48,32 @@ export default async function DashboardPage() {
     .eq("id", userId)
     .single();
 
-  console.log("Profile:", profile);
-  console.log("Supabase Error:", error);
-
   if (!profile) redirect("/register");
 
   if (profile.role === "employer") {
-    const [{ data: jobs }, { data: empOrdersRaw }, { data: empListingsRaw }] = await Promise.all([
+    // Fetch true counts using head requests, then fetch the recent 5 jobs for display
+    const [
+      { count: totalJobs },
+      { count: pendingJobs },
+      { count: approvedJobs },
+      { data: jobs },
+      { data: empOrdersRaw },
+      { data: empListingsRaw },
+    ] = await Promise.all([
+      supabase
+        .from("jobs")
+        .select("*", { count: "exact", head: true })
+        .eq("employer_id", userId),
+      supabase
+        .from("jobs")
+        .select("*", { count: "exact", head: true })
+        .eq("employer_id", userId)
+        .eq("status", "pending"),
+      supabase
+        .from("jobs")
+        .select("*", { count: "exact", head: true })
+        .eq("employer_id", userId)
+        .eq("status", "approved"),
       supabase
         .from("jobs")
         .select("id, job_title, status, created_at, category, location, positions")
@@ -77,9 +95,10 @@ export default async function DashboardPage() {
     ]);
 
     const allJobs = jobs ?? [];
-    const total = allJobs.length;
-    const pending = allJobs.filter((j) => j.status === "pending").length;
-    const approved = allJobs.filter((j) => j.status === "approved").length;
+    const total = totalJobs ?? 0;
+    const pending = pendingJobs ?? 0;
+    const approved = approvedJobs ?? 0;
+
     const empActivity = buildActivity(
       userId,
       (empOrdersRaw ?? []) as unknown as RawOrderActivity[],
@@ -447,7 +466,6 @@ function AdminDashboard({
 }) {
   return (
     <div className="space-y-8 w-full max-w-7xl mx-auto">
-      {/* Greeting */}
       <div>
         <p className="text-sm text-muted-foreground mb-1">Platform overview</p>
         <h1 className="text-3xl font-bold tracking-tight">
@@ -461,7 +479,6 @@ function AdminDashboard({
         </p>
       </div>
 
-      {/* Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <StatCard
           icon={<Users className="h-5 w-5 text-blue-600" />}
@@ -489,7 +506,6 @@ function AdminDashboard({
         />
       </div>
 
-      {/* Quick actions */}
       <div>
         <h2 className="text-base font-semibold mb-4">Quick Actions</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -560,8 +576,8 @@ function StatCard({
       <div className="flex items-center justify-between mt-1">
         <p className="text-xs text-muted-foreground font-medium">{label}</p>
         {link && (
-          <Link href={link.href} className="text-xs text-primary hover:underline font-medium ">
-             {link.label}&nbsp; &rarr;
+          <Link href={link.href} className="text-xs text-primary hover:underline font-medium">
+            {link.label} &rarr;
           </Link>
         )}
       </div>
@@ -723,3 +739,4 @@ function calcProfileCompleteness(profile: Profile): number {
   const filled = fields.filter(Boolean).length;
   return Math.round((filled / fields.length) * 100);
 }
+

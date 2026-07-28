@@ -2,25 +2,42 @@
 
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { User, Upload, X, Loader2, Save } from "lucide-react";
+import { User, Upload, X, Loader2, Save, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { toast } from "sonner";
 import { uploadToCloudinary } from "@/lib/cloudinary";
 import { cn } from "@/lib/utils";
 import { PROFESSIONS } from "@/lib/constants";
+import { COUNTRIES } from "@/lib/countries";
 import type { Profile } from "@/types/database";
 
 export function ProfileEditForm({ initialProfile }: { initialProfile: Profile }) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
+  // Basic info
   const [fullName, setFullName] = useState(initialProfile.full_name ?? "");
   const [username, setUsername] = useState(initialProfile.username ?? "");
   const [phone, setPhone] = useState(initialProfile.phone ?? "");
   const [gender, setGender] = useState(initialProfile.gender ?? "");
+
+  // New fields – email (read-only), country, city
+  const [email] = useState(initialProfile.email ?? "");
+  const [country, setCountry] = useState(initialProfile.country ?? "");
+  const [city, setCity] = useState(initialProfile.city ?? "");
+
+  // Seeker fields
   const [profession, setProfession] = useState(initialProfile.profession ?? "");
+
+  // Employer fields
   const [companyCr, setCompanyCr] = useState(initialProfile.company_cr ?? "");
   const [companyWebsite, setCompanyWebsite] = useState(
     initialProfile.company_website ?? ""
@@ -29,15 +46,27 @@ export function ProfileEditForm({ initialProfile }: { initialProfile: Profile })
     initialProfile.company_address ?? ""
   );
 
+  // Avatar
   const [avatarPreview, setAvatarPreview] = useState(
     initialProfile.avatar_url ?? ""
   );
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
-  const [cvFile, setCvFile] = useState<File | null>(null);
   const avatarInputRef = useRef<HTMLInputElement>(null);
+
+  // CV
+  const [cvFile, setCvFile] = useState<File | null>(null);
+  const [existingCvUrl, setExistingCvUrl] = useState(
+    initialProfile.cv_url ?? ""
+  );
   const cvInputRef = useRef<HTMLInputElement>(null);
 
   const isSeeker = initialProfile.role === "seeker";
+
+  // Delete CV handler
+  function handleDeleteCv() {
+    setExistingCvUrl("");
+    setCvFile(null); // also clear any new file
+  }
 
   async function handleSave() {
     if (!fullName.trim()) {
@@ -48,7 +77,6 @@ export function ProfileEditForm({ initialProfile }: { initialProfile: Profile })
     try {
       let avatarUrl = initialProfile.avatar_url;
       let avatarPublicId = initialProfile.avatar_public_id;
-      let cvUrl = initialProfile.cv_url;
 
       if (avatarFile) {
         const { url, publicId } = await uploadToCloudinary(
@@ -59,7 +87,10 @@ export function ProfileEditForm({ initialProfile }: { initialProfile: Profile })
         avatarPublicId = publicId;
       }
 
-      if (cvFile && isSeeker) {
+      // Determine final CV URL
+      let cvUrl = existingCvUrl; // if we deleted, this will be empty string -> null later
+      if (cvFile) {
+        // Upload new CV (this replaces existing)
         const fd = new FormData();
         fd.append("cv", cvFile);
         const res = await fetch("/api/profile/upload-cv", {
@@ -80,17 +111,22 @@ export function ProfileEditForm({ initialProfile }: { initialProfile: Profile })
           username: username.trim() || null,
           phone: phone.trim() || null,
           gender: gender || null,
+          country: country || null,            // new
+          city: city.trim() || null,           // new
           profession: isSeeker ? (profession || null) : null,
           avatarUrl,
           avatarPublicId,
-          cvUrl,
+          cvUrl: cvUrl || null,                // empty string -> null
           companyCr: !isSeeker ? (companyCr.trim() || null) : null,
           companyWebsite: !isSeeker ? (companyWebsite.trim() || null) : null,
           companyAddress: !isSeeker ? (companyAddress.trim() || null) : null,
         }),
       });
 
-      if (!res.ok) throw new Error("Failed to save profile");
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error ?? "Failed to save profile");
+      }
       toast.success("Profile updated successfully.");
       router.refresh();
     } catch (err: unknown) {
@@ -133,7 +169,7 @@ export function ProfileEditForm({ initialProfile }: { initialProfile: Profile })
                 setAvatarPreview("");
                 setAvatarFile(null);
               }}
-              className="absolute top-0 right-0 translate-x-1/3 -translate-y-1/3 h-5 w-5 rounded-full bg-destructive text-white flex items-center justify-center cursor-pointer "
+              className="absolute top-0 right-0 translate-x-1/3 -translate-y-1/3 h-5 w-5 rounded-full bg-destructive text-white flex items-center justify-center cursor-pointer"
               aria-label="Remove photo"
             >
               <X className="h-3 w-3" />
@@ -169,12 +205,13 @@ export function ProfileEditForm({ initialProfile }: { initialProfile: Profile })
         </div>
       </div>
 
-      {/* Fields */}
+      {/* Personal Info */}
       <div className="w-full p-5 rounded-xl border border-border bg-card space-y-4">
         <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
           Personal Info
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Full Name (required) */}
           <Field label="Full Name" className="col-span-full">
             <Input
               value={fullName}
@@ -182,6 +219,20 @@ export function ProfileEditForm({ initialProfile }: { initialProfile: Profile })
               placeholder="Ahmed Al-Rashidi"
             />
           </Field>
+
+          {/* Email – read-only */}
+          <Field label="Email address" className="col-span-full">
+            <Input
+              value={email}
+              readOnly
+              className="bg-muted/50 cursor-not-allowed"
+            />
+            <p className="text-xs text-muted-foreground mt-1">
+              Your login email cannot be changed here.
+            </p>
+          </Field>
+
+          {/* Username */}
           <Field label="Username">
             <Input
               value={username}
@@ -189,6 +240,8 @@ export function ProfileEditForm({ initialProfile }: { initialProfile: Profile })
               placeholder="ahmed_hse"
             />
           </Field>
+
+          {/* Phone */}
           <Field label="Phone">
             <Input
               value={phone}
@@ -196,14 +249,12 @@ export function ProfileEditForm({ initialProfile }: { initialProfile: Profile })
               placeholder="+966 5x xxx xxxx"
             />
           </Field>
+
+          {/* Gender */}
           <Field label="Gender">
             <Select
               value={gender}
-              
-              onValueChange={(v: any) => {
-                setGender(v);
-              }}
-              
+              onValueChange={(v: any) => setGender(v)}
             >
               <SelectTrigger className="cursor-pointer">
                 <SelectValue placeholder="Select" />
@@ -215,26 +266,54 @@ export function ProfileEditForm({ initialProfile }: { initialProfile: Profile })
               </SelectContent>
             </Select>
           </Field>
+
+          {/* Country */}
+          <Field label="Country">
+            <Select
+              value={country}
+              onValueChange={(v: any) => setCountry(v)}
+            >
+              <SelectTrigger className="cursor-pointer">
+                <SelectValue placeholder="Select country" />
+              </SelectTrigger>
+              <SelectContent>
+                {COUNTRIES.map((c) => (
+                  <SelectItem key={c.code} value={c.code} className="cursor-pointer">
+                    {c.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </Field>
+
+          {/* City */}
+          <Field label="City">
+            <Input
+              value={city}
+              onChange={(e) => setCity(e.target.value)}
+              placeholder="e.g. Riyadh"
+            />
+          </Field>
         </div>
       </div>
 
-      {/* Seeker: Profession + CV */}
+      {/* Seeker: Professional Info */}
       {isSeeker && (
         <div className="w-full p-5 rounded-xl border border-border bg-card space-y-4">
           <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
             Professional Info
           </h2>
+
+          {/* Profession */}
           <Field label="Profession">
             <Select
               value={profession}
-              onValueChange={(v: any) => {
-                setProfession(v);
-              }}
+              onValueChange={(v: any) => setProfession(v)}
             >
               <SelectTrigger className="cursor-pointer">
                 <SelectValue placeholder="Your profession" />
               </SelectTrigger>
-              <SelectContent style={{width:"200px"}}>
+              <SelectContent>
                 {PROFESSIONS.map((p) => (
                   <SelectItem key={p} value={p} className="cursor-pointer">
                     {p}
@@ -244,46 +323,74 @@ export function ProfileEditForm({ initialProfile }: { initialProfile: Profile })
             </Select>
           </Field>
 
+          {/* CV / Resume */}
           <Field label="CV / Resume">
-            <label
-              className={cn(
-                "flex items-center gap-3 h-11 px-3 rounded-lg border border-dashed cursor-pointer transition-colors",
-                "border-border hover:border-primary/50 hover:bg-primary/5",
-                cvFile && "border-primary/40 bg-primary/5"
+            <div className="space-y-2">
+              {/* Existing CV display + delete button */}
+              {existingCvUrl && !cvFile && (
+                <div className="flex items-center justify-between p-2 bg-muted/50 rounded-md">
+                  <span className="text-sm text-muted-foreground truncate max-w-[70%]">
+                    CV uploaded
+                  </span>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="text-destructive hover:text-destructive/80"
+                    onClick={handleDeleteCv}
+                  >
+                    <Trash2 className="h-4 w-4 mr-1" />
+                    Delete
+                  </Button>
+                </div>
               )}
-            >
-              <input
-                ref={cvInputRef}
-                type="file"
-                accept="application/pdf"
-                className="sr-only"
-                onChange={(e) => {
-                  const f = e.target.files?.[0];
-                  if (f) setCvFile(f);
-                }}
-              />
-              <Upload className="h-4 w-4 text-muted-foreground shrink-0" />
-              <span className="text-sm text-muted-foreground truncate">
-                {cvFile
-                  ? cvFile.name
-                  : initialProfile.cv_url
-                  ? "CV uploaded — click to replace"
-                  : "Upload CV (PDF, max 10MB)"}
-              </span>
-              {cvFile && (
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setCvFile(null);
+
+              {/* Upload / Replace */}
+              <label
+                className={cn(
+                  "flex items-center gap-3 h-11 px-3 rounded-lg border border-dashed cursor-pointer transition-colors",
+                  "border-border hover:border-primary/50 hover:bg-primary/5",
+                  cvFile && "border-primary/40 bg-primary/5"
+                )}
+              >
+                <input
+                  ref={cvInputRef}
+                  type="file"
+                  accept="application/pdf"
+                  className="sr-only"
+                  onChange={(e) => {
+                    const f = e.target.files?.[0];
+                    if (f) {
+                      setCvFile(f);
+                      setExistingCvUrl(""); // clear existing when new file chosen
+                    }
                   }}
-                  className="ml-auto"
-                  aria-label="Remove CV"
-                >
-                  <X className="h-3.5 w-3.5 text-muted-foreground hover:text-destructive" />
-                </button>
-              )}
-            </label>
+                />
+                <Upload className="h-4 w-4 text-muted-foreground shrink-0" />
+                <span className="text-sm text-muted-foreground truncate">
+                  {cvFile
+                    ? cvFile.name
+                    : existingCvUrl
+                    ? "Click to replace current CV"
+                    : "Upload CV (PDF, max 10MB)"}
+                </span>
+                {cvFile && (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setCvFile(null);
+                      // if there was an existing CV, restore its visibility
+                      if (initialProfile.cv_url) setExistingCvUrl(initialProfile.cv_url);
+                    }}
+                    className="ml-auto"
+                    aria-label="Remove new CV file"
+                  >
+                    <X className="h-3.5 w-3.5 text-muted-foreground hover:text-destructive" />
+                  </button>
+                )}
+              </label>
+            </div>
           </Field>
         </div>
       )}

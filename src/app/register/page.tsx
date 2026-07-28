@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useSignUp } from "@clerk/nextjs";
-import { Briefcase, User, ArrowRight, ArrowLeft, Eye, EyeOff, Loader2, Upload, X } from "lucide-react";
+import { Briefcase, User, ArrowRight, ArrowLeft, Eye, EyeOff, Loader2, Upload, X, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { cn } from "@/lib/utils";
 import { uploadToCloudinary } from "@/lib/cloudinary";
 import { COUNTRIES } from "@/lib/countries";
+import { JOB_CATEGORIES } from "@/lib/constants"; // now used for seeker job interests
 import { toast } from "sonner";
 import Image from "next/image";
 
@@ -32,6 +33,7 @@ interface FormData {
   city: string;
   // Seeker only
   profession: string;
+  jobInterests: string[];          // NEW: multi‑select from JOB_CATEGORIES
   avatarFile: File | null;
   avatarPreview: string;
   cvFile: File | null;
@@ -209,13 +211,26 @@ export default function RegisterPage() {
 
   const [form, setForm] = useState<FormData>({
     email: "", password: "", fullName: "", username: "", phone: "",
-    gender: "", location: "", country: "", city: "", profession: "", avatarFile: null,
-    avatarPreview: "", cvFile: null, companyCr: "", companyWebsite: "",
-    companyAddress: "", code: "",
+    gender: "", location: "", country: "", city: "", profession: "",
+    jobInterests: [], avatarFile: null, avatarPreview: "", cvFile: null,
+    companyCr: "", companyWebsite: "", companyAddress: "", code: "",
   });
 
-  const set = (field: keyof FormData, value: string | File | null) =>
+  const set = (field: keyof FormData, value: string | File | null | string[]) =>
     setForm((prev) => ({ ...prev, [field]: value }));
+
+  // Toggle a job interest
+  const toggleJobInterest = (category: string) => {
+    setForm((prev) => {
+      const exists = prev.jobInterests.includes(category);
+      return {
+        ...prev,
+        jobInterests: exists
+          ? prev.jobInterests.filter((c) => c !== category)
+          : [...prev.jobInterests, category],
+      };
+    });
+  };
 
   // ── Step: Account creation ────────────────────────────────
   async function handleCreateAccount() {
@@ -256,7 +271,7 @@ export default function RegisterPage() {
     }
   }
 
-  // ── Step: Profile save (calls our API) ───────────────────
+  // ── Step: Profile save ────────────────────────────────────
   async function handleSaveProfile() {
     setIsLoading(true);
     try {
@@ -264,30 +279,20 @@ export default function RegisterPage() {
       let avatarPublicId: string | null = null;
       let cvStoragePath: string | null = null;
 
-      // Upload avatar to Cloudinary
       if (form.avatarFile) {
-        const { url, publicId } = await uploadToCloudinary(
-          form.avatarFile,
-          "hunared/avatars"
-        );
+        const { url, publicId } = await uploadToCloudinary(form.avatarFile, "hunared/avatars");
         avatarUrl = url;
         avatarPublicId = publicId;
       }
 
-      // Upload CV to Cloudinary using the docs preset
       if (form.cvFile && goal === "seeker") {
-        const { url } = await uploadToCloudinary(
-          form.cvFile,
-          "hunared/cvs",
-          {
-            preset: process.env.NEXT_PUBLIC_CLOUDINARY_DOCS_PRESET,
-            resourceType: "auto",
-          }
-        );
+        const { url } = await uploadToCloudinary(form.cvFile, "hunared/cvs", {
+          preset: process.env.NEXT_PUBLIC_CLOUDINARY_DOCS_PRESET,
+          resourceType: "auto",
+        });
         cvStoragePath = url;
       }
 
-      // Save profile via API
       const res = await fetch("/api/profile/save", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -301,6 +306,7 @@ export default function RegisterPage() {
           country: form.country || null,
           city: form.city.trim() || null,
           profession: goal === "seeker" ? form.profession : null,
+          jobInterests: goal === "seeker" ? form.jobInterests : null,
           avatarUrl,
           avatarPublicId,
           cvUrl: cvStoragePath,
@@ -310,7 +316,10 @@ export default function RegisterPage() {
         }),
       });
 
-      if (!res.ok) throw new Error("Profile save failed");
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error ?? "Profile save failed");
+      }
 
       toast.success("Profile created! Welcome to Hunared.");
       router.push(goal === "seeker" ? "/candidates" : "/jobs");
@@ -332,12 +341,7 @@ export default function RegisterPage() {
       <div className="w-full max-w-lg">
         {/* Logo */}
         <div className="text-center mb-8">
-          <Link
-            href="/"
-            className="flex items-center gap-2.5 group shrink-0"
-            aria-label="Hunared home"
-          >
-            {/* Logo Icon */}
+          <Link href="/" className="flex items-center gap-2.5 group shrink-0" aria-label="Hunared home">
             <Image
               src="/assets/logos/logo-horizontal.png"
               alt="Hunared Logo"
@@ -347,25 +351,9 @@ export default function RegisterPage() {
               priority
               className="h-10 w-10 object-contain"
             />
-
-            {/* Logo Text */}
             <span
-              className="
-                text-[30px]
-                font-extrabold
-                tracking-tight
-                leading-none
-                bg-gradient-to-r
-                from-[#0F7DD7]
-                via-[#243A8F]
-                to-[#4B178F]
-                bg-clip-text
-                text-transparent
-                select-none
-              "
-              style={{
-                fontFamily: "Inter, Poppins, sans-serif",
-              }}
+              className="text-[30px] font-extrabold tracking-tight leading-none bg-gradient-to-r from-[#0F7DD7] via-[#243A8F] to-[#4B178F] bg-clip-text text-transparent select-none"
+              style={{ fontFamily: "Inter, Poppins, sans-serif" }}
             >
               Hunared
             </span>
@@ -373,7 +361,7 @@ export default function RegisterPage() {
         </div>
 
         {/* ── STEP: Goal ── */}
-        {step === "goal" && ( 
+        {step === "goal" && (
           <div className="space-y-6 text-center">
             <div>
               <h1 className="text-2xl font-bold text-foreground">What&apos;s your goal?</h1>
@@ -395,12 +383,7 @@ export default function RegisterPage() {
                 onClick={() => setGoal("employer")}
               />
             </div>
-            <Button
-              size="lg"
-              className="w-full h-11"
-              disabled={!goal}
-              onClick={() => setStep("account")}
-            >
+            <Button size="lg" className="w-full h-11" disabled={!goal} onClick={() => setStep("account")}>
               Continue <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
             <p className="text-sm text-muted-foreground">
@@ -414,48 +397,21 @@ export default function RegisterPage() {
 
         {/* ── STEP: Account ── */}
         {step === "account" && (
-          <FormCard
-            title="Create your account"
-            subtitle={`Registering as a ${goal === "seeker" ? "Job Seeker" : "Employer"}`}
-            onBack={() => setStep("goal")}
-          >
+          <FormCard title="Create your account" subtitle={`Registering as a ${goal === "seeker" ? "Job Seeker" : "Employer"}`} onBack={() => setStep("goal")}>
             <div className="space-y-4">
               <Field label="Email address">
-                <Input
-                  type="email"
-                  placeholder="you@example.com"
-                  value={form.email}
-                  onChange={(e) => set("email", e.target.value)}
-                  required
-                />
+                <Input type="email" placeholder="you@example.com" value={form.email} onChange={(e) => set("email", e.target.value)} required />
               </Field>
               <Field label="Password">
                 <div className="relative">
-                  <Input
-                    type={showPassword ? "text" : "password"}
-                    placeholder="Min. 8 characters"
-                    value={form.password}
-                    onChange={(e) => set("password", e.target.value)}
-                    className="pr-10"
-                    required
-                  />
-                  <button
-                    type="button"
-                    className="absolute inset-y-0 right-3 flex items-center text-muted-foreground hover:text-foreground"
-                    onClick={() => setShowPassword((v) => !v)}
-                    aria-label="Toggle password visibility"
-                  >
+                  <Input type={showPassword ? "text" : "password"} placeholder="Min. 8 characters" value={form.password} onChange={(e) => set("password", e.target.value)} className="pr-10" required />
+                  <button type="button" className="absolute inset-y-0 right-3 flex items-center text-muted-foreground hover:text-foreground" onClick={() => setShowPassword((v) => !v)} aria-label="Toggle password visibility">
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
               </Field>
-              {/* Required by Clerk Smart CAPTCHA bot protection */}
               <div id="clerk-captcha" />
-              <Button
-                className="w-full h-11"
-                disabled={!form.email || !form.password || isLoading}
-                onClick={handleCreateAccount}
-              >
+              <Button className="w-full h-11" disabled={!form.email || !form.password || isLoading} onClick={handleCreateAccount}>
                 {isLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
                 Create Account
               </Button>
@@ -465,28 +421,12 @@ export default function RegisterPage() {
 
         {/* ── STEP: Verify ── */}
         {step === "verify" && (
-          <FormCard
-            title="Check your email"
-            subtitle={`We sent a 6-digit code to ${form.email}`}
-            onBack={() => setStep("account")}
-          >
+          <FormCard title="Check your email" subtitle={`We sent a 6-digit code to ${form.email}`} onBack={() => setStep("account")}>
             <div className="space-y-4">
               <Field label="Verification code">
-                <Input
-                  type="text"
-                  inputMode="numeric"
-                  maxLength={6}
-                  placeholder="000000"
-                  className="text-center text-xl tracking-[0.4em] font-mono h-14"
-                  value={form.code}
-                  onChange={(e) => set("code", e.target.value.replace(/\D/g, ""))}
-                />
+                <Input type="text" inputMode="numeric" maxLength={6} placeholder="000000" className="text-center text-xl tracking-[0.4em] font-mono h-14" value={form.code} onChange={(e) => set("code", e.target.value.replace(/\D/g, ""))} />
               </Field>
-              <Button
-                className="w-full h-11"
-                disabled={form.code.length !== 6 || isLoading}
-                onClick={handleVerify}
-              >
+              <Button className="w-full h-11" disabled={form.code.length !== 6 || isLoading} onClick={handleVerify}>
                 {isLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
                 Verify & Continue
               </Button>
@@ -494,56 +434,48 @@ export default function RegisterPage() {
           </FormCard>
         )}
 
-        {/* ── STEP: Profile ── */}
+        {/* ── STEP: Profile – SEEKER ── */}
         {step === "profile" && goal === "seeker" && (
-          <FormCard
-            title="Complete your profile"
-            subtitle="This information will appear on your public candidate card"
-          >
+          <FormCard title="Complete your profile" subtitle="This information will appear on your public candidate card">
             <div className="space-y-4">
               {/* Avatar upload */}
               <div className="flex flex-col items-center gap-3">
                 <div className="relative h-20 w-20">
                   {form.avatarPreview ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={form.avatarPreview}
-                      alt="Avatar preview"
-                      className="h-20 w-20 rounded-full object-cover border-2 border-primary/30"
-                    />
+                    <img src={form.avatarPreview} alt="Avatar preview" className="h-20 w-20 rounded-full object-cover border-2 border-primary/30" />
                   ) : (
                     <div className="h-20 w-20 rounded-full bg-muted flex items-center justify-center border-2 border-dashed border-border">
                       <User className="h-8 w-8 text-muted-foreground" />
                     </div>
                   )}
                   {form.avatarPreview && (
-                    <button
-                      type="button"
-                      onClick={() => { set("avatarFile", null); set("avatarPreview", ""); }}
-                      className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-destructive text-white flex items-center justify-center"
-                      aria-label="Remove photo"
-                    >
+                    <button type="button" onClick={() => { set("avatarFile", null); set("avatarPreview", ""); }} className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-destructive text-white flex items-center justify-center" aria-label="Remove photo">
                       <X className="h-3 w-3" />
                     </button>
                   )}
                 </div>
                 <label className="cursor-pointer">
-                  <input
-                    type="file"
-                    accept="image/jpeg,image/png,image/webp"
-                    className="sr-only"
-                    onChange={(e) => {
-                      const f = e.target.files?.[0];
-                      if (!f) return;
-                      set("avatarFile", f);
-                      set("avatarPreview", URL.createObjectURL(f));
-                    }}
-                  />
+                  <input type="file" accept="image/jpeg,image/png,image/webp" className="sr-only" onChange={(e) => {
+                    const f = e.target.files?.[0];
+                    if (!f) return;
+                    set("avatarFile", f);
+                    set("avatarPreview", URL.createObjectURL(f));
+                  }} />
                   <span className="text-xs text-primary hover:underline flex items-center gap-1.5">
                     <Upload className="h-3.5 w-3.5" /> Upload Photo
                   </span>
                 </label>
               </div>
+
+              {/* Email (read-only, from signUp) */}
+              <Field label="Email address">
+                <Input
+                  value={signUp?.emailAddress ?? form.email}
+                  readOnly
+                  className="bg-muted/50 cursor-not-allowed"
+                />
+                <p className="text-xs text-muted-foreground mt-1">Your verified login email</p>
+              </Field>
 
               <div className="grid grid-cols-2 gap-3">
                 <Field label="Full Name" className="col-span-2">
@@ -586,6 +518,39 @@ export default function RegisterPage() {
                 </Field>
               </div>
 
+              {/* Job Interests (multi‑select from provided JOB_CATEGORIES) */}
+              <Field label="Job Interests (select all that apply)">
+                <div className="max-h-48 overflow-y-auto border border-border rounded-lg p-3 grid grid-cols-2 gap-2 text-sm">
+                  {JOB_CATEGORIES.map((cat) => {
+                    const selected = form.jobInterests.includes(cat);
+                    return (
+                      <button
+                        key={cat}
+                        type="button"
+                        onClick={() => toggleJobInterest(cat)}
+                        className={cn(
+                          "flex items-center gap-2 px-2 py-1.5 rounded-md text-left transition-colors",
+                          selected
+                            ? "bg-primary/10 text-primary font-medium"
+                            : "hover:bg-muted text-muted-foreground"
+                        )}
+                      >
+                        <div className={cn(
+                          "h-4 w-4 shrink-0 rounded border flex items-center justify-center transition-colors",
+                          selected
+                            ? "border-primary bg-primary text-primary-foreground"
+                            : "border-muted-foreground/40"
+                        )}>
+                          {selected && <Check className="h-3 w-3" />}
+                        </div>
+                        <span className="truncate">{cat}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+                <p className="text-xs text-muted-foreground mt-1">We’ll match you with jobs in these categories</p>
+              </Field>
+
               {/* CV Upload */}
               <Field label="CV / Resume (PDF only)">
                 <label className={cn(
@@ -593,37 +558,23 @@ export default function RegisterPage() {
                   "border-border hover:border-primary/50 hover:bg-primary/5",
                   form.cvFile && "border-primary/40 bg-primary/5"
                 )}>
-                  <input
-                    type="file"
-                    accept="application/pdf"
-                    className="sr-only"
-                    onChange={(e) => {
-                      const f = e.target.files?.[0];
-                      if (f) set("cvFile", f);
-                    }}
-                  />
+                  <input type="file" accept="application/pdf" className="sr-only" onChange={(e) => {
+                    const f = e.target.files?.[0];
+                    if (f) set("cvFile", f);
+                  }} />
                   <Upload className="h-4 w-4 text-muted-foreground shrink-0" />
                   <span className="text-sm text-muted-foreground truncate">
                     {form.cvFile ? form.cvFile.name : "Click to upload your CV (PDF, max 10MB)"}
                   </span>
                   {form.cvFile && (
-                    <button
-                      type="button"
-                      onClick={(e) => { e.preventDefault(); set("cvFile", null); }}
-                      className="ml-auto shrink-0"
-                      aria-label="Remove CV"
-                    >
+                    <button type="button" onClick={(e) => { e.preventDefault(); set("cvFile", null); }} className="ml-auto shrink-0" aria-label="Remove CV">
                       <X className="h-3.5 w-3.5 text-muted-foreground hover:text-destructive" />
                     </button>
                   )}
                 </label>
               </Field>
 
-              <Button
-                className="w-full h-11 mt-2"
-                disabled={!form.fullName || isLoading}
-                onClick={handleSaveProfile}
-              >
+              <Button className="w-full h-11 mt-2" disabled={!form.fullName || isLoading} onClick={handleSaveProfile}>
                 {isLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
                 Complete Registration
               </Button>
@@ -631,11 +582,9 @@ export default function RegisterPage() {
           </FormCard>
         )}
 
+        {/* ── STEP: Profile – EMPLOYER ── */}
         {step === "profile" && goal === "employer" && (
-          <FormCard
-            title="Company details"
-            subtitle="Tell us about the company you're hiring for"
-          >
+          <FormCard title="Company details" subtitle="Tell us about the company you're hiring for">
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-3">
                 <Field label="Full Name" className="col-span-2">
@@ -678,12 +627,7 @@ export default function RegisterPage() {
                   <Input placeholder="Street, City, Country" value={form.companyAddress} onChange={(e) => set("companyAddress", e.target.value)} />
                 </Field>
               </div>
-
-              <Button
-                className="w-full h-11 mt-2"
-                disabled={!form.fullName || isLoading}
-                onClick={handleSaveProfile}
-              >
+              <Button className="w-full h-11 mt-2" disabled={!form.fullName || isLoading} onClick={handleSaveProfile}>
                 {isLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
                 Complete Registration
               </Button>
@@ -695,16 +639,10 @@ export default function RegisterPage() {
   );
 }
 
-/* ── Sub-components ─────────────────────────────────────────── */
+/* ── Sub‑components ─────────────────────────────────────────── */
 
-function GoalCard({
-  icon, title, description, selected, onClick,
-}: {
-  icon: React.ReactNode;
-  title: string;
-  description: string;
-  selected: boolean;
-  onClick: () => void;
+function GoalCard({ icon, title, description, selected, onClick }: {
+  icon: React.ReactNode; title: string; description: string; selected: boolean; onClick: () => void;
 }) {
   return (
     <button
@@ -712,9 +650,7 @@ function GoalCard({
       onClick={onClick}
       className={cn(
         "flex flex-col items-center gap-3 rounded-2xl border-2 p-6 text-center transition-all duration-200",
-        selected
-          ? "border-primary bg-primary/8 shadow-sm"
-          : "border-border hover:border-primary/40 hover:bg-muted/50"
+        selected ? "border-primary bg-primary/8 shadow-sm" : "border-border hover:border-primary/40 hover:bg-muted/50"
       )}
     >
       <div className={cn(
@@ -731,23 +667,14 @@ function GoalCard({
   );
 }
 
-function FormCard({
-  title, subtitle, onBack, children,
-}: {
-  title: string;
-  subtitle?: string;
-  onBack?: () => void;
-  children: React.ReactNode;
+function FormCard({ title, subtitle, onBack, children }: {
+  title: string; subtitle?: string; onBack?: () => void; children: React.ReactNode;
 }) {
   return (
     <div className="rounded-2xl border border-border bg-card p-6 shadow-sm space-y-5">
       <div className="space-y-1">
         {onBack && (
-          <button
-            type="button"
-            onClick={onBack}
-            className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground mb-2 transition-colors"
-          >
+          <button type="button" onClick={onBack} className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground mb-2 transition-colors">
             <ArrowLeft className="h-3.5 w-3.5" /> Back
           </button>
         )}
@@ -759,12 +686,8 @@ function FormCard({
   );
 }
 
-function Field({
-  label, children, className,
-}: {
-  label: string;
-  children: React.ReactNode;
-  className?: string;
+function Field({ label, children, className }: {
+  label: string; children: React.ReactNode; className?: string;
 }) {
   return (
     <div className={cn("space-y-1.5", className)}>
