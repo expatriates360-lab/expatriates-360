@@ -147,6 +147,12 @@ export default function PostJobPage() {
       return;
     }
     if (!form.companyName.trim()) { toast.error("Company Name is required."); return; }
+    
+    // ✅ UPDATED: Check that at least one contact method is provided
+    if (!form.companyPhone.trim() && !form.companyEmail.trim()) {
+      toast.error("Please provide at least one contact method: Phone or Email.");
+      return;
+    }
 
     const positionsNum = form.positions.trim()
       ? parseInt(form.positions, 10)
@@ -401,22 +407,32 @@ export default function PostJobPage() {
                 onChange={(e) => set("companyName", e.target.value)}
               />
             </Field>
-            <Field label="Company Phone (Optional)">
+            
+            {/* ✅ UPDATED: Changed labels to show they're optional but at least one required */}
+            <Field label="Company Phone (Optional*)" className="col-span-full sm:col-span-1">
               <Input
                 type="tel"
                 placeholder="+966 1x xxx xxxx"
                 value={form.companyPhone}
                 onChange={(e) => set("companyPhone", e.target.value)}
               />
+              <p className="text-[10px] text-muted-foreground mt-1">
+                Provide at least one contact method
+              </p>
             </Field>
-            <Field label="Company Email">
+            
+            <Field label="Company Email (Optional*)" className="col-span-full sm:col-span-1">
               <Input
                 type="email"
                 placeholder="hr@company.com"
                 value={form.companyEmail}
                 onChange={(e) => set("companyEmail", e.target.value)}
               />
+              <p className="text-[10px] text-muted-foreground mt-1">
+                Provide at least one contact method
+              </p>
             </Field>
+            
             <Field label="Company Address (Optional)" className="col-span-full">
               <Input
                 placeholder="Street, City, Country"

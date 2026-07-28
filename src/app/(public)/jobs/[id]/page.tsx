@@ -50,12 +50,21 @@ export default async function JobDetailPage({
     year: "numeric",
   });
 
-  const salaryLabel =
-    job.salary_type === "After Interview"
-      ? "To be discussed"
-      : job.salary_rate
-      ? `${job.salary_rate} (${job.salary_type ?? ""})`
-      : (job.salary_type ?? "Not specified");
+  // ✅ UPDATED: Format salary with currency
+  const formatSalary = () => {
+    if (job.salary_type === "After Interview") {
+      return "To be discussed";
+    }
+    
+    if (job.salary_rate) {
+      const currencySymbol = job.currency || "SAR";
+      return `${job.salary_rate} ${currencySymbol} (${job.salary_type ?? ""})`;
+    }
+    
+    return job.salary_type ?? "Not specified";
+  };
+
+  const salaryLabel = formatSalary();
 
   const hasMap = job.office_lat != null && job.office_lng != null;
 
@@ -153,7 +162,7 @@ export default async function JobDetailPage({
           {/* Sidebar */}
           <div className="space-y-4">
             {/* Quick details */}
-            <Card>
+            <Card> 
               <CardContent className="pt-5 pb-5 space-y-3">
                 <h3 className="text-sm font-semibold">Quick Details</h3>
                 <Detail icon={<Tag className="h-4 w-4" />} label="Category" value={job.category} />
@@ -162,6 +171,35 @@ export default async function JobDetailPage({
                 )}
                 <Detail icon={<Calendar className="h-4 w-4" />} label="Posted" value={postedOn} />
                 <Detail icon={<Clock className="h-4 w-4" />} label="Duration" value={job.duration} />
+                
+                {/* ✅ UPDATED: Show salary with currency in quick details */}
+                <div className="flex items-start gap-2.5">
+                  <Banknote className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
+                  <div>
+                    <p className="text-xs text-muted-foreground">Salary</p>
+                    <p className="text-sm text-foreground">
+                      {job.salary_type === "After Interview" 
+                        ? "To be discussed" 
+                        : job.salary_rate 
+                          ? `${job.salary_rate} ${job.currency || "SAR"}`
+                          : job.salary_type ?? "Not specified"
+                      }
+                    </p>
+                    {job.salary_type && job.salary_type !== "After Interview" && job.salary_rate && (
+                      <p className="text-[10px] text-muted-foreground mt-0.5">
+                        Type: {job.salary_type}
+                      </p>
+                    )}
+                  </div>
+                </div>
+                
+                {job.currency && (
+                  <Detail 
+                    icon={<Banknote className="h-4 w-4" />} 
+                    label="Currency" 
+                    value={job.currency} 
+                  />
+                )}
                 {job.salary_type && (
                   <Detail
                     icon={<Banknote className="h-4 w-4" />}

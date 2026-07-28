@@ -107,13 +107,19 @@ export default function NewListingPage() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
-  const [currency, setCurrency] = useState("USD");
+  
+  // ✅ UPDATED: Default currency to SAR
+  const [currency, setCurrency] = useState("SAR");
+  
   const searchParams = useSearchParams();
   const [category, setCategory] = useState(
     searchParams.get("category") ?? ""
   );
   const [subcategory, setSubcategory] = useState("");
-  const [country, setCountry] = useState("");
+  
+  // ✅ UPDATED: Default country to Saudi Arabia (SA)
+  const [country, setCountry] = useState("SA");
+  
   const [city, setCity] = useState("");
   const [contactPhone, setContactPhone] = useState("");
   const [listingType, setListingType] = useState<ListingType>("standard");
@@ -368,11 +374,11 @@ export default function NewListingPage() {
               </div>
             </div>
 
-            {/* Country + City */}
+            {/* Country + City - Country now defaults to SA */}
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="text-sm font-medium block mb-1.5">
-                  Country
+                  Country <span className="text-destructive">*</span>
                 </label>
                 <Select
                   value={country}
@@ -391,10 +397,13 @@ export default function NewListingPage() {
                     ))}
                   </SelectContent>
                 </Select>
+                <p className="text-[10px] text-muted-foreground mt-1">
+                  Default: Saudi Arabia
+                </p>
               </div>
               <div>
                 <label className="text-sm font-medium block mb-1.5">
-                  City
+                  City <span className="text-destructive">*</span>
                 </label>
                 <input
                   value={city}
@@ -405,7 +414,7 @@ export default function NewListingPage() {
               </div>
             </div>
 
-            {/* Price + Currency (price is now optional) */}
+            {/* Price + Currency - Currency now defaults to SAR */}
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="text-sm font-medium block mb-1.5">
@@ -420,7 +429,7 @@ export default function NewListingPage() {
               </div>
               <div>
                 <label className="text-sm font-medium block mb-1.5">
-                  Currency
+                  Currency <span className="text-destructive">*</span>
                 </label>
                 <Select
                   value={currency}
@@ -439,6 +448,9 @@ export default function NewListingPage() {
                     ))}
                   </SelectContent>
                 </Select>
+                <p className="text-[10px] text-muted-foreground mt-1">
+                  Default: SAR (Saudi Riyal)
+                </p>
               </div>
             </div>
 
@@ -554,4 +566,3 @@ export default function NewListingPage() {
     </div>
   );
 }
- 

@@ -108,6 +108,7 @@ export interface Database {
           duration: string;
           salary_rate: string | null;
           salary_type: string | null;
+          currency: string | null; // ✅ ADD THIS LINE
           category: string;
           subcategory: string | null;
           company_name: string;
@@ -133,6 +134,7 @@ export interface Database {
           duration: string;
           salary_rate?: string | null;
           salary_type?: string | null;
+          currency?: string | null; // ✅ ADD THIS LINE
           category: string;
           subcategory?: string | null;
           company_name: string;
@@ -158,6 +160,7 @@ export interface Database {
           duration?: string;
           salary_rate?: string | null;
           salary_type?: string | null;
+          currency?: string | null; // ✅ ADD THIS LINE
           category?: string;
           subcategory?: string | null;
           company_name?: string;

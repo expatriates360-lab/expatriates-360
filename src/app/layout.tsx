@@ -29,19 +29,45 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "/",
   },
+  
+  // 👇 ADD THIS SECTION: To ensure favicon is properly recognized
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
+    apple: "/favicon.ico", // Or use a dedicated apple icon if you have one
+  },
+  
+  // 👇 ADD THIS: Robots for search engines
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  
+  // 👇 UPDATE THIS: Site name for Google
   openGraph: {
     title: "Hunared — Global Jobs, Property, Marketplace & Learning",
     description:
       "Find jobs, property, marketplace deals, and learning opportunities worldwide on Hunared.",
-    url: "/",
+    url: "https://hunared.com",
     siteName: "Hunared",
     type: "website",
+    locale: "en_US",
   },
+  
+  // 👇 UPDATE THIS: Add site name for Twitter
   twitter: {
     card: "summary_large_image",
     title: "Hunared — Global Jobs, Property, Marketplace & Learning",
     description:
       "Find jobs, property, marketplace deals, and learning opportunities worldwide on Hunared.",
+    site: "@hunared", // Optional: Add your Twitter handle
   },
 };
 
