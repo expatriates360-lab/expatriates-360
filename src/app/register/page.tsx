@@ -49,10 +49,153 @@ const LOCATIONS = [
   "Pakistan", "India", "Philippines", "Other",
 ];
 
-const PROFESSIONS = [
-  "HSE Engineer", "Civil Engineer", "Electrical Engineer", "Mechanical Engineer",
-  "Project Manager", "Site Supervisor", "Safety Officer", "IT Specialist",
-  "Accountant", "HR Manager", "Driver", "Technician", "Other",
+export const PROFESSIONS = [
+  "Accountant",
+  "Admin Assistant",
+  "Administrator",
+  "Automation Engineer",
+  "Automation Technician",
+  "Carpenter",
+  "CCTV Technician",
+  "Chemical Engineer",
+  "Chiller Technician",
+  "Civil Engineer",
+  "Civil Foreman",
+  "Civil Inspector",
+  "Civil QC Inspector",
+  "Civil Supervisor",
+  "Coating Inspector",
+  "Construction Manager",
+  "Cost Controller",
+  "Crane Operator",
+  "Customer Service",
+  "Data Entry Operator",
+  "Document Controller",
+  "Driver",
+  "E&I Foreman",
+  "E&I Supervisor",
+  "E&I Technician",
+  "Electrical Engineer",
+  "Electrical Foreman",
+  "Electrical Inspector",
+  "Electrical QC Inspector",
+  "Electrical Supervisor",
+  "Electrical Technician",
+  "Electrician",
+  "Equipment Operator",
+  "Equipment Supervisor",
+  "Fabricator",
+  "Field Operator",
+  "Finance Officer",
+  "Fire Alarm Technician",
+  "Fire Fighter",
+  "Fire Watch",
+  "Forklift Operator",
+  "Freelancer",
+  "Helper",
+  "Housekeeping Staff",
+  "HR Manager",
+  "HR Officer",
+  "HVAC Engineer",
+  "HVAC Foreman",
+  "HVAC Supervisor",
+  "HVAC Technician",
+  "Instrumentation Foreman",
+  "Instrumentation Supervisor",
+  "Instrumentation Technician",
+  "Inventory Controller",
+  "IT Specialist",
+  "Land Surveyor",
+  "Logistics Coordinator",
+  "Mason",
+  "Material Controller",
+  "Material Coordinator",
+  "Material Inspector",
+  "Mechanical Engineer",
+  "Mechanical Fitter",
+  "Mechanical Foreman",
+  "Mechanical Inspector",
+  "Mechanical QC Inspector",
+  "Mechanical Supervisor",
+  "Mechanical Technician",
+  "Millwright Technician",
+  "Multi Welder",
+  "NDT Inspector",
+  "Network Engineer",
+  "Network Technician",
+  "Office Assistant",
+  "Operations Manager",
+  "Other",
+  "Painter",
+  "Painting Foreman",
+  "Painting Inspector",
+  "Painting Supervisor",
+  "Panel Technician",
+  "Permit Receiver",
+  "Pipe Fabricator",
+  "Pipe Fitter",
+  "Piping Engineer",
+  "Piping Foreman",
+  "Piping Inspector",
+  "Piping QC Inspector",
+  "Piping Supervisor",
+  "Piping Technician",
+  "Planning Coordinator",
+  "Planning Engineer",
+  "Planning Manager",
+  "Plumber",
+  "Procurement Officer",
+  "Production Operator",
+  "Project Coordinator",
+  "Project Engineer",
+  "Project Manager",
+  "QA/QC Coordinator",
+  "QA/QC Engineer",
+  "QA/QC Inspector",
+  "QA/QC Manager",
+  "QA/QC Supervisor",
+  "Rigger I",
+  "Rigger II",
+  "Rigger III",
+  "Rigging Foreman",
+  "Rigging Supervisor",
+  "Rotating Equipment Engineer",
+  "Rotating Equipment Technician",
+  "Safety Inspector",
+  "Safety Officer",
+  "Safety Supervisor",
+  "Sand Blaster",
+  "Scaffolder",
+  "Scaffolding Foreman",
+  "Scaffolding Supervisor",
+  "Security Guard",
+  "Site Engineer",
+  "Site Manager",
+  "Site Supervisor",
+  "Solar Technician",
+  "Stand By Man",
+  "Static Equipment Engineer",
+  "Static Equipment Technician",
+  "Steel Fixer",
+  "Steel Structure Fitter",
+  "Steel Structure Foreman",
+  "Storekeeper",
+  "Structural Engineer",
+  "Structural Fitter",
+  "Structural Welder",
+  "Surveyor",
+  "Telecom Engineer",
+  "Telecom Technician",
+  "Timekeeper",
+  "Transformer Technician",
+  "Warehouse Manager",
+  "Warehouse Supervisor",
+  "Welder",
+  "Welding Foreman",
+  "Welding Inspector",
+  "Welding QC Inspector",
+  "Welding Supervisor",
+  "Yard Supervisor",
 ];
 
 export default function RegisterPage() {
@@ -189,18 +332,44 @@ export default function RegisterPage() {
       <div className="w-full max-w-lg">
         {/* Logo */}
         <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center gap-2">
-              <Image
-                src="/assets/logos/logo-horizontal.png"
-                alt="Hunared"
-                width={380}
-                height={70}
-                quality={100}
-                priority
-                unoptimized
-                className="h-16 md:h-20 w-auto object-contain ml-3 mt-n4"
-              />
-            </Link>
+          <Link
+            href="/"
+            className="flex items-center gap-2.5 group shrink-0"
+            aria-label="Hunared home"
+          >
+            {/* Logo Icon */}
+            <Image
+              src="/assets/logos/logo-horizontal.png"
+              alt="Hunared Logo"
+              width={42}
+              height={38}
+              quality={100}
+              priority
+              className="h-10 w-10 object-contain"
+            />
+
+            {/* Logo Text */}
+            <span
+              className="
+                text-[30px]
+                font-extrabold
+                tracking-tight
+                leading-none
+                bg-gradient-to-r
+                from-[#0F7DD7]
+                via-[#243A8F]
+                to-[#4B178F]
+                bg-clip-text
+                text-transparent
+                select-none
+              "
+              style={{
+                fontFamily: "Inter, Poppins, sans-serif",
+              }}
+            >
+              Hunared
+            </span>
+          </Link>
         </div>
 
         {/* ── STEP: Goal ── */}

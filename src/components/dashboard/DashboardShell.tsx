@@ -210,18 +210,44 @@ function SidebarContent({
     <div className="flex flex-col h-full">
       {/* Logo */}
       <div className="flex items-center px-5 h-16 border-b border-border shrink-0">
-        <Link href="/">
-          <Image
-            src="/assets/logos/logo-horizontal.png"
-            alt="Hunared"
-            width={380}
-            height={70}
-            quality={100}
-            priority
-            unoptimized
-            className="h-16 md:h-20 w-auto object-contain ml-3 mt-n4"
-          />
-        </Link>
+        <Link
+            href="/"
+            className="flex items-center gap-2.5 group shrink-0"
+            aria-label="Hunared home"
+          >
+            {/* Logo Icon */}
+            <Image
+              src="/assets/logos/logo-horizontal.png"
+              alt="Hunared Logo"
+              width={42}
+              height={38}
+              quality={100}
+              priority
+              className="h-10 w-10 object-contain"
+            />
+
+            {/* Logo Text */}
+            <span
+              className="
+                text-[30px]
+                font-extrabold
+                tracking-tight
+                leading-none
+                bg-gradient-to-r
+                from-[#0F7DD7]
+                via-[#243A8F]
+                to-[#4B178F]
+                bg-clip-text
+                text-transparent
+                select-none
+              "
+              style={{
+                fontFamily: "Inter, Poppins, sans-serif",
+              }}
+            >
+              Hunared
+            </span>
+          </Link>
       </div>
 
       {/* Nav links */}

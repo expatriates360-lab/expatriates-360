@@ -1,11 +1,10 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import dynamic from "next/dynamic";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useSearchParams } from "next/navigation";
 import {
   Select,
   SelectTrigger,
@@ -20,30 +19,69 @@ import { COUNTRIES } from "@/lib/countries";
 
 const RichTextEditor = dynamic(
   () => import("@/components/ui/RichTextEditor").then((m) => m.RichTextEditor),
-  { ssr: false, loading: () => <div className="h-[167px] rounded-md border border-input bg-muted/30 animate-pulse" /> }
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-[167px] rounded-md border border-input bg-muted/30 animate-pulse" />
+    ),
+  }
 );
 
-const CLOUDINARY_CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ?? "";
-const CLOUDINARY_UPLOAD_PRESET = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET ?? "";
+const CLOUDINARY_CLOUD_NAME =
+  process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ?? "";
+const CLOUDINARY_UPLOAD_PRESET =
+  process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET ?? "";
 
 type ListingType = "standard" | "native" | "affiliate";
 
-// Subcategories per top-level category (from client spec)
 const SUBCATEGORIES: Record<string, string[]> = {
   accommodation: [
-    "Houses for Rent", "Apartments", "Villas", "Rooms", "Bed Spaces",
-    "Commercial Property", "Offices", "Shops", "Warehouses", "Land",
+    "Houses for Rent",
+    "Apartments",
+    "Villas",
+    "Rooms",
+    "Bed Spaces",
+    "Commercial Property",
+    "Offices",
+    "Shops",
+    "Warehouses",
+    "Land",
   ],
   vehicles: ["Cars", "Motorcycles", "Trucks", "Spare Parts", "Tires"],
-  electronics: ["Mobile Phones", "Laptops", "Computers", "Tablets", "Watches", "Printers"],
+  electronics: [
+    "Mobile Phones",
+    "Laptops",
+    "Computers",
+    "Tablets",
+    "Watches",
+    "Printers",
+  ],
   services: [
-    "Electrical", "Mechanical", "Plumbing", "HVAC", "Carpentry", "Painting",
-    "Welding", "IT Support", "Web Development", "Design", "Cleaning",
-    "Security", "Logistics", "Transportation", "Consulting",
+    "Electrical",
+    "Mechanical",
+    "Plumbing",
+    "HVAC",
+    "Carpentry",
+    "Painting",
+    "Welding",
+    "IT Support",
+    "Web Development",
+    "Design",
+    "Cleaning",
+    "Security",
+    "Logistics",
+    "Transportation",
+    "Consulting",
   ],
   other: [
-    "Furniture", "Home Appliances", "Kitchen Equipment", "Decor",
-    "Tools", "Machinery", "Safety Equipment", "Construction Equipment",
+    "Furniture",
+    "Home Appliances",
+    "Kitchen Equipment",
+    "Decor",
+    "Tools",
+    "Machinery",
+    "Safety Equipment",
+    "Construction Equipment",
   ],
 };
 
@@ -71,7 +109,9 @@ export default function NewListingPage() {
   const [price, setPrice] = useState("");
   const [currency, setCurrency] = useState("USD");
   const searchParams = useSearchParams();
-  const [category, setCategory] = useState(searchParams.get("category") ?? "");
+  const [category, setCategory] = useState(
+    searchParams.get("category") ?? ""
+  );
   const [subcategory, setSubcategory] = useState("");
   const [country, setCountry] = useState("");
   const [city, setCity] = useState("");
@@ -79,14 +119,23 @@ export default function NewListingPage() {
   const [listingType, setListingType] = useState<ListingType>("standard");
   const [externalLink, setExternalLink] = useState("");
 
-  // Multiple images
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
 
   const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const availableSubcategories = category ? (SUBCATEGORIES[category] ?? []) : [];
+  const availableSubcategories = category
+    ? SUBCATEGORIES[category] ?? []
+    : [];
+
+  // Force listing type to "standard" and clear external link for services & property
+  useEffect(() => {
+    if (category === "services" || category === "accommodation") {
+      setListingType("standard");
+      setExternalLink("");
+    }
+  }, [category]);
 
   function handleImageChange(e: React.ChangeEvent<HTMLInputElement>) {
     const files = Array.from(e.target.files ?? []);
@@ -107,10 +156,23 @@ export default function NewListingPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!title.trim()) { toast.error("Title is required"); return; }
-    if (!description.trim()) { toast.error("Description is required"); return; }
-    if (!price.trim()) { toast.error("Price is required"); return; }
-    if (!category) { toast.error("Please select a category"); return; }
+    if (!title.trim()) {
+      toast.error("Title is required");
+      return;
+    }
+    if (!description.trim()) {
+      toast.error("Description is required");
+      return;
+    }
+    if (!category) {
+      toast.error("Please select a category");
+      return;
+    }
+    // Contact phone is mandatory
+    if (!contactPhone.trim()) {
+      toast.error("Contact phone is required");
+      return;
+    }
     if (listingType === "affiliate" && !externalLink.trim()) {
       toast.error("Please enter an external / affiliate URL");
       return;
@@ -131,7 +193,9 @@ export default function NewListingPage() {
       const countryName = country
         ? COUNTRIES.find((c) => c.code === country)?.name ?? country
         : "";
-      const locationString = [city.trim(), countryName].filter(Boolean).join(", ");
+      const locationString = [city.trim(), countryName]
+        .filter(Boolean)
+        .join(", ");
 
       const res = await fetch("/api/market", {
         method: "POST",
@@ -179,7 +243,7 @@ export default function NewListingPage() {
             <CardTitle className="text-base">Listing Details</CardTitle>
           </CardHeader>
           <CardContent className="space-y-5">
-            {/* Image gallery upload */}
+            {/* Photos */}
             <div>
               <label className="text-sm font-medium block mb-1.5">
                 Photos{" "}
@@ -234,7 +298,13 @@ export default function NewListingPage() {
               <input
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                placeholder="e.g. 2-bedroom apartment in Riyadh"
+                placeholder={
+                  category === "services"
+                    ? "e.g. Electrical Maintenance in Riyadh"
+                    : category === "accommodation"
+                    ? "e.g. 2-bedroom apartment in Riyadh"
+                    : "e.g. Samsung Mobile for Sale"
+                }
                 maxLength={100}
                 className="w-full px-3 py-2 text-sm rounded-md border border-input bg-background focus:outline-none focus:ring-2 focus:ring-ring"
               />
@@ -251,7 +321,7 @@ export default function NewListingPage() {
                   onValueChange={(v: string | null) => {
                     if (v) {
                       setCategory(v);
-                      setSubcategory(""); // reset when parent changes
+                      setSubcategory("");
                     }
                   }}
                 >
@@ -260,24 +330,38 @@ export default function NewListingPage() {
                   </SelectTrigger>
                   <SelectContent>
                     {LISTING_CATEGORIES.map((c) => (
-                      <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>
+                      <SelectItem key={c.value} value={c.value}>
+                        {c.label}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
               <div>
-                <label className="text-sm font-medium block mb-1.5">Subcategory</label>
+                <label className="text-sm font-medium block mb-1.5">
+                  Subcategory
+                </label>
                 <Select
                   value={subcategory}
-                  onValueChange={(v: string | null) => { if (v) setSubcategory(v); }}
+                  onValueChange={(v: string | null) => {
+                    if (v) setSubcategory(v);
+                  }}
                   disabled={!availableSubcategories.length}
                 >
                   <SelectTrigger className="w-full">
-                    <SelectValue placeholder={availableSubcategories.length ? "Select subcategory..." : "Select category first"} />
+                    <SelectValue
+                      placeholder={
+                        availableSubcategories.length
+                          ? "Select subcategory..."
+                          : "Select category first"
+                      }
+                    />
                   </SelectTrigger>
                   <SelectContent>
                     {availableSubcategories.map((s) => (
-                      <SelectItem key={s} value={s}>{s}</SelectItem>
+                      <SelectItem key={s} value={s}>
+                        {s}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -287,20 +371,31 @@ export default function NewListingPage() {
             {/* Country + City */}
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="text-sm font-medium block mb-1.5">Country</label>
-                <Select value={country} onValueChange={(v: string | null) => { if (v) setCountry(v); }}>
+                <label className="text-sm font-medium block mb-1.5">
+                  Country
+                </label>
+                <Select
+                  value={country}
+                  onValueChange={(v: string | null) => {
+                    if (v) setCountry(v);
+                  }}
+                >
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select country..." />
                   </SelectTrigger>
                   <SelectContent>
                     {COUNTRIES.map((c) => (
-                      <SelectItem key={c.code} value={c.code}>{c.name}</SelectItem>
+                      <SelectItem key={c.code} value={c.code}>
+                        {c.name}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
               <div>
-                <label className="text-sm font-medium block mb-1.5">City</label>
+                <label className="text-sm font-medium block mb-1.5">
+                  City
+                </label>
                 <input
                   value={city}
                   onChange={(e) => setCity(e.target.value)}
@@ -310,11 +405,11 @@ export default function NewListingPage() {
               </div>
             </div>
 
-            {/* Price + Currency */}
+            {/* Price + Currency (price is now optional) */}
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="text-sm font-medium block mb-1.5">
-                  Price <span className="text-destructive">*</span>
+                  Price
                 </label>
                 <input
                   value={price}
@@ -324,40 +419,63 @@ export default function NewListingPage() {
                 />
               </div>
               <div>
-                <label className="text-sm font-medium block mb-1.5">Currency</label>
-                <Select value={currency} onValueChange={(v: string | null) => { if (v) setCurrency(v); }}>
+                <label className="text-sm font-medium block mb-1.5">
+                  Currency
+                </label>
+                <Select
+                  value={currency}
+                  onValueChange={(v: string | null) => {
+                    if (v) setCurrency(v);
+                  }}
+                >
                   <SelectTrigger className="w-full">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
                     {LISTING_CURRENCIES.map((c) => (
-                      <SelectItem key={c} value={c}>{c}</SelectItem>
+                      <SelectItem key={c} value={c}>
+                        {c}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
             </div>
 
-            {/* Listing type */}
-            <div>
-              <label className="text-sm font-medium block mb-1.5">Listing Type</label>
-              <Select value={listingType} onValueChange={(v) => setListingType(v as ListingType)}>
-                <SelectTrigger className="w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="standard">Standard (Contact to Buy)</SelectItem>
-                  <SelectItem value="native">Native Purchase</SelectItem>
-                  <SelectItem value="affiliate">Affiliate / External Link</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+            {/* Listing Type – hidden for services & accommodation */}
+            {category !== "services" && category !== "accommodation" && (
+              <div>
+                <label className="text-sm font-medium block mb-1.5">
+                  Listing Type
+                </label>
+                <Select
+                  value={listingType}
+                  onValueChange={(v) => setListingType(v as ListingType)}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="standard">
+                      Standard (Contact to Buy)
+                    </SelectItem>
+                    <SelectItem value="native">
+                      Native Purchase
+                    </SelectItem>
+                    <SelectItem value="affiliate">
+                      Affiliate / External Link
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
 
-            {/* External link — shown only for affiliate type */}
+            {/* External link – shown only for affiliate type */}
             {listingType === "affiliate" && (
               <div>
                 <label className="text-sm font-medium block mb-1.5">
-                  External Link / Affiliate URL <span className="text-destructive">*</span>
+                  External Link / Affiliate URL{" "}
+                  <span className="text-destructive">*</span>
                 </label>
                 <div className="relative">
                   <Link2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
@@ -375,9 +493,11 @@ export default function NewListingPage() {
               </div>
             )}
 
-            {/* Contact phone */}
+            {/* Contact phone – now mandatory */}
             <div>
-              <label className="text-sm font-medium block mb-1.5">Contact Phone (optional)</label>
+              <label className="text-sm font-medium block mb-1.5">
+                Contact Phone <span className="text-destructive">*</span>
+              </label>
               <input
                 value={contactPhone}
                 onChange={(e) => setContactPhone(e.target.value)}
@@ -385,7 +505,9 @@ export default function NewListingPage() {
                 type="tel"
                 className="w-full px-3 py-2 text-sm rounded-md border border-input bg-background focus:outline-none focus:ring-2 focus:ring-ring"
               />
-              <p className="text-xs text-muted-foreground mt-1">Only shown to signed-in users</p>
+              <p className="text-xs text-muted-foreground mt-1">
+                Shown only to signed‑in users. Required for all listings.
+              </p>
             </div>
 
             {/* Description */}
@@ -401,9 +523,16 @@ export default function NewListingPage() {
             </div>
 
             <div className="flex gap-3 pt-2">
-              <Button type="submit" disabled={loading} className="min-w-[140px]">
+              <Button
+                type="submit"
+                disabled={loading}
+                className="min-w-[140px]"
+              >
                 {uploading ? (
-                  <><Loader2 className="h-4 w-4 animate-spin mr-2" /> Uploading...</>
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" />{" "}
+                    Uploading...
+                  </>
                 ) : loading ? (
                   "Submitting..."
                 ) : (
@@ -425,3 +554,4 @@ export default function NewListingPage() {
     </div>
   );
 }
+ 

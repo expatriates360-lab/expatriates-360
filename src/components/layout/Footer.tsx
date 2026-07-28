@@ -44,18 +44,44 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10">
           {/* Brand */}
           <div className="lg:col-span-2 space-y-4">
-            <Link href="/" className="inline-flex items-center gap-2.5 group">
-              <Image
-                src="/assets/logos/logo-horizontal.png"
-                alt="Hunared"
-                width={380}
-                height={70}
-                quality={100}
-                priority
-                unoptimized
-                className="h-16 md:h-20 w-auto object-contain ml-3 mt-n4"
-              />
-            </Link>
+            <Link
+            href="/"
+            className="flex items-center gap-2.5 group shrink-0"
+            aria-label="Hunared home"
+          >
+            {/* Logo Icon */}
+            <Image
+              src="/assets/logos/logo-horizontal.png"
+              alt="Hunared Logo"
+              width={42}
+              height={38}
+              quality={100}
+              priority
+              className="h-10 w-10 object-contain"
+            />
+
+            {/* Logo Text */}
+            <span
+              className="
+                text-[30px]
+                font-extrabold
+                tracking-tight
+                leading-none
+                bg-gradient-to-r
+                from-[#0F7DD7]
+                via-[#243A8F]
+                to-[#4B178F]
+                bg-clip-text
+                text-transparent
+                select-none
+              "
+              style={{
+                fontFamily: "Inter, Poppins, sans-serif",
+              }}
+            >
+              Hunared
+            </span>
+          </Link>
             <p className="text-sm text-muted-foreground max-w-xs leading-relaxed">
               Your complete career and lifestyle portal for expatriates — connecting talent with opportunity across the globe.
             </p>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import dynamic from "next/dynamic";
+// import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { Loader2, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -18,16 +18,16 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { JOB_CATEGORIES, DURATIONS, SALARY_TYPES } from "@/lib/constants";
 import { COUNTRIES } from "@/lib/countries";
-import type { OfficeLocation } from "@/components/jobs/OfficeLocationPicker";
+// import type { OfficeLocation } from "@/components/jobs/OfficeLocationPicker";
 import Link from "next/link";
 
-const OfficeLocationPicker = dynamic(
-  () =>
-    import("@/components/jobs/OfficeLocationPicker").then(
-      (m) => m.OfficeLocationPicker
-    ),
-  { ssr: false }
-);
+// const OfficeLocationPicker = dynamic(
+//   () =>
+//     import("@/components/jobs/OfficeLocationPicker").then(
+//       (m) => m.OfficeLocationPicker
+//     ),
+//   { ssr: false }
+// );
 
 interface JobForm {
   jobTitle: string;
@@ -39,6 +39,7 @@ interface JobForm {
   duration: string;
   salaryType: string;
   salaryRate: string;
+  currency: string;
   category: string;
   subcategory: string;
   companyName: string;
@@ -47,10 +48,61 @@ interface JobForm {
   companyAddress: string;
 }
 
+const CURRENCIES = [
+  "SAR",
+  "PKR",
+  "QAR",
+  "AED",
+  "KWD",
+  "BHD",
+  "USD",
+  "EUR",
+  "ARS",
+  "AUD",
+  "BDT",
+  "BRL",
+  "CAD",
+  "CHF",
+  "CLP",
+  "CNY",
+  "COP",
+  "CZK",
+  "DKK",
+  "EGP",
+  "ETB",
+  "GBP",
+  "HKD",
+  "HUF",
+  "IDR",
+  "INR",
+  "JPY",
+  "KES",
+  "KRW",
+  "LKR",
+  "MAD",
+  "MXN",
+  "MYR",
+  "NGN",
+  "NOK",
+  "NPR",
+  "NZD",
+  "OMR",
+  "PHP",
+  "PLN",
+  "RUB",
+  "SEK",
+  "SGD",
+  "THB",
+  "TRY",
+  "TWD",
+  "VND",
+  "ZAR",
+];
+
 export default function PostJobPage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const [officeLocation, setOfficeLocation] = useState<OfficeLocation | null>(null);
+  // const [officeLocation, setOfficeLocation] = useState<OfficeLocation | null>(null);
 
   const [form, setForm] = useState<JobForm>({
     jobTitle: "",
@@ -62,6 +114,7 @@ export default function PostJobPage() {
     duration: "",
     salaryType: "",
     salaryRate: "",
+    currency: "SAR",
     category: "",
     subcategory: "",
     companyName: "",
@@ -82,16 +135,18 @@ export default function PostJobPage() {
     if (!form.jobTitle.trim()) { toast.error("Job Title is required."); return; }
     if (!form.jobDescription.trim()) { toast.error("Job Description is required."); return; }
     if (!form.country) { toast.error("Country is required."); return; }
-    if (!form.city.trim()) { toast.error("City is required."); return; }
     if (!form.duration) { toast.error("Duration is required."); return; }
     if (!form.category) { toast.error("Category is required."); return; }
     if (!form.salaryType) { toast.error("Salary Type is required."); return; }
+    if (!form.currency) {
+      toast.error("Currency is required.");
+      return;
+    }
     if (salaryAmountRequired && !form.salaryRate.trim()) {
       toast.error("Salary / Rate amount is required for Hourly or Monthly type.");
       return;
     }
     if (!form.companyName.trim()) { toast.error("Company Name is required."); return; }
-    if (!form.companyPhone.trim()) { toast.error("Company Phone is required."); return; }
 
     const positionsNum = form.positions.trim()
       ? parseInt(form.positions, 10)
@@ -113,22 +168,25 @@ export default function PostJobPage() {
           jobTitle: form.jobTitle.trim(),
           jobDescription: form.jobDescription.trim(),
           positions: positionsNum,
-          location: `${form.city.trim()}, ${countryName}`,
+          location: form.city.trim()
+            ? `${form.city.trim()}, ${countryName}`
+            : countryName,
           country: form.country,
-          city: form.city.trim(),
+          city: form.city.trim() || null,
           employmentType: form.employmentType,
           duration: form.duration,
           salaryType: form.salaryType,
           salaryRate: salaryAmountRequired ? form.salaryRate.trim() : null,
+          currency: form.currency,
           category: form.category,
           subcategory: form.subcategory.trim() || null,
           companyName: form.companyName.trim(),
-          companyPhone: form.companyPhone.trim(),
+          companyPhone: form.companyPhone.trim() || null,
           companyEmail: form.companyEmail.trim() || null,
           companyAddress: form.companyAddress.trim() || null,
-          officeLat: officeLocation?.lat ?? null,
-          officeLng: officeLocation?.lng ?? null,
-          officeAddress: officeLocation?.address ?? null,
+          // officeLat: officeLocation?.lat ?? null,
+          // officeLng: officeLocation?.lng ?? null,
+          // officeAddress: officeLocation?.address ?? null,
         }),
       });
 
@@ -243,8 +301,7 @@ export default function PostJobPage() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="permanent">Permanent</SelectItem>
-                  <SelectItem value="temporary">Temporary / Temp Job</SelectItem>
-                  <SelectItem value="task_force">Task Force</SelectItem>
+                  <SelectItem value="temporary">Temporary</SelectItem>
                 </SelectContent>
               </Select>
             </Field>
@@ -297,6 +354,27 @@ export default function PostJobPage() {
               </Select>
             </Field>
 
+            <Field label="Currency *">
+              <Select
+                value={form.currency}
+                onValueChange={(v) => {
+                  if (v) set("currency", v);
+                }}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select currency" />
+                </SelectTrigger>
+
+                <SelectContent>
+                  {CURRENCIES.map((currency) => (
+                    <SelectItem key={currency} value={currency}>
+                      {currency}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </Field>
+
             {salaryAmountRequired && (
               <Field label={`Salary / Rate (${form.salaryType}) *`}>
                 <Input
@@ -323,7 +401,7 @@ export default function PostJobPage() {
                 onChange={(e) => set("companyName", e.target.value)}
               />
             </Field>
-            <Field label="Company Phone *">
+            <Field label="Company Phone (Optional)">
               <Input
                 type="tel"
                 placeholder="+966 1x xxx xxxx"
@@ -350,7 +428,7 @@ export default function PostJobPage() {
         </Section>
 
         {/* Office Location / Map */}
-        <Section title="Office Location (Optional)">
+        {/* <Section title="Office Location (Optional)">
           <p className="text-xs text-muted-foreground -mt-1">
             Search for an address or click the map to pin the exact office location.
           </p>
@@ -369,7 +447,7 @@ export default function PostJobPage() {
               Clear location
             </Button>
           )}
-        </Section>
+        </Section> */}
 
         <Button type="submit" className="h-11 w-full sm:w-auto cursor-pointer" disabled={isLoading}>
           {isLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}

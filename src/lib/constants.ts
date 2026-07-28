@@ -169,7 +169,13 @@ export const LISTING_CATEGORIES = [
 
 export type ListingCategoryValue = (typeof LISTING_CATEGORIES)[number]["value"];
 
-export const LISTING_CURRENCIES = ["SAR", "AED", "QAR", "KWD", "BHD", "OMR", "EGP", "USD", "GBP"] as const;
+export const LISTING_CURRENCIES = [
+  "SAR", "PKR", "QAR", "AED", "KWD", "BHD", "USD", "EUR", "ARS", "AUD",
+  "BDT", "BRL", "CAD", "CHF", "CLP", "CNY", "COP", "CZK", "DKK", "EGP",
+  "ETB", "GBP", "HKD", "HUF", "IDR", "INR", "JPY", "KES", "KRW", "LKR",
+  "MAD", "MXN", "MYR", "NGN", "NOK", "NPR", "NZD", "OMR", "PHP", "PLN",
+  "RUB", "SEK", "SGD", "THB", "TRY", "TWD", "VND", "ZAR"
+] as const; 
 
 export const LISTING_CATEGORY_COLORS: Record<string, string> = {
   accommodation: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300",

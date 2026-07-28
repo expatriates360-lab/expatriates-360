@@ -23,7 +23,11 @@ interface SaveProfileBody {
 }
 
 export async function POST(req: Request) {
+
+  console.log("==== SAVE PROFILE API CALLED ====");
+  
   const { userId } = await auth();
+  console.log("User ID:", userId);
   if (!userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }

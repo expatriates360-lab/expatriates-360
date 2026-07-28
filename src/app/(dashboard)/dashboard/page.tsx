@@ -39,14 +39,18 @@ export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
   const { userId } = await auth();
+  console.log("Clerk User ID:", userId);
   if (!userId) redirect("/sign-in");
 
   const supabase = createAdminClient();
-  const { data: profile } = await supabase
+  const { data: profile, error } = await supabase
     .from("profiles")
     .select("*")
     .eq("id", userId)
     .single();
+
+  console.log("Profile:", profile);
+  console.log("Supabase Error:", error);
 
   if (!profile) redirect("/register");
 

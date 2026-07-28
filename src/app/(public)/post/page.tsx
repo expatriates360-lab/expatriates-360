@@ -30,13 +30,13 @@ const AD_TYPES: AdType[] = [
     href: "/dashboard/jobs/new",
     examples: ["Engineering", "Construction", "Healthcare", "IT"],
   },
-  {
-    icon: Zap,
-    title: "Temp Work & Task Force",
-    description: "Hire temporary workers, skilled trades, and general labor fast.",
-    href: "/dashboard/jobs/new",
-    examples: ["Temp Jobs", "Task Force", "Skilled Workers", "General Labor"],
-  },
+  // {
+  //   icon: Zap,
+  //   title: "Temp Work & Task Force",
+  //   description: "Hire temporary workers, skilled trades, and general labor fast.",
+  //   href: "/dashboard/jobs/new",
+  //   examples: ["Temp Jobs", "Task Force", "Skilled Workers", "General Labor"],
+  // },
   {
     icon: GraduationCap,
     title: "Learning Hub",
@@ -71,20 +71,6 @@ const AD_TYPES: AdType[] = [
     description: "Publish articles and community news for the Hunared audience.",
     href: "/dashboard/articles/new",
     examples: ["Articles", "News", "Career Tips", "Safety & HSE"],
-  },
-  {
-    icon: CalendarDays,
-    title: "Events",
-    description: "Promote community events and gatherings.",
-    href: null,
-    examples: ["Meetups", "Job Fairs", "Workshops"],
-  },
-  {
-    icon: Users,
-    title: "Networking",
-    description: "Connect professionals and build community groups.",
-    href: null,
-    examples: ["Professional Groups", "Communities"],
   },
 ];
 
