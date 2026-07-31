@@ -99,7 +99,7 @@ export function EditJobForm({ job }: { job: Job }) {
     }
     if (!form.companyName.trim()) { toast.error("Company Name is required."); return; }
     
-    // ✅ UPDATED: Check that at least one contact method is provided
+    // Check that at least one contact method is provided
     if (!form.companyPhone.trim() && !form.companyEmail.trim()) {
       toast.error("Please provide at least one contact method: Phone or Email.");
       return;
@@ -303,32 +303,29 @@ export function EditJobForm({ job }: { job: Job }) {
                 onChange={(e) => set("companyName", e.target.value)}
               />
             </Field>
-            
-            {/* ✅ UPDATED: Changed labels to show they're optional but at least one required */}
-            <Field label="Company Phone (Optional*)" className="col-span-full sm:col-span-1">
+
+            <Field label="Company Phone" className="col-span-full sm:col-span-1">
               <Input
                 type="tel"
                 placeholder="+966 1x xxx xxxx"
                 value={form.companyPhone}
                 onChange={(e) => set("companyPhone", e.target.value)}
               />
-              <p className="text-[10px] text-muted-foreground mt-1">
-                Provide at least one contact method
-              </p>
             </Field>
-            
-            <Field label="Company Email (Optional*)" className="col-span-full sm:col-span-1">
+
+            <Field label="Company Email" className="col-span-full sm:col-span-1">
               <Input
                 type="email"
                 placeholder="hr@company.com"
                 value={form.companyEmail}
                 onChange={(e) => set("companyEmail", e.target.value)}
               />
-              <p className="text-[10px] text-muted-foreground mt-1">
-                Provide at least one contact method
-              </p>
             </Field>
-            
+
+            <div className="col-span-full text-[10px] text-muted-foreground mt-1">
+              At least one contact method (Phone or Email) is required.
+            </div>
+
             <Field label="Company Address (Optional)" className="col-span-full">
               <Input
                 placeholder="Street, City, Country"
