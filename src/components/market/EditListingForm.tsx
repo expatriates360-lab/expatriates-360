@@ -76,6 +76,9 @@ export function EditListingForm({ listing }: { listing: Listing }) {
   const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  // ✅ Price is optional only for the "services" category
+  const isPriceOptional = category === "services";
+
   function handleImageChange(e: React.ChangeEvent<HTMLInputElement>) {
     const files = Array.from(e.target.files ?? []);
     if (!files.length) return;
@@ -106,7 +109,8 @@ export function EditListingForm({ listing }: { listing: Listing }) {
     e.preventDefault();
     if (!title.trim()) { toast.error("Title is required"); return; }
     if (!description.trim()) { toast.error("Description is required"); return; }
-    if (!price.trim()) { toast.error("Price is required"); return; }
+    // ✅ Price is required for all categories EXCEPT services
+    if (!isPriceOptional && !price.trim()) { toast.error("Price is required"); return; }
     if (!category) { toast.error("Please select a category"); return; }
     if (listingType === "affiliate" && !externalLink.trim()) {
       toast.error("Please enter an external / affiliate URL");
@@ -275,16 +279,27 @@ export function EditListingForm({ listing }: { listing: Listing }) {
             </div>
           </div>
 
-          {/* Price + Currency */}
+          {/* Price + Currency - Price optional for services */}
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="text-sm font-medium block mb-1.5">
-                Price <span className="text-destructive">*</span>
+                Price{" "}
+                {isPriceOptional ? (
+                  <span className="text-muted-foreground text-xs font-normal">
+                    (optional)
+                  </span>
+                ) : (
+                  <span className="text-destructive">*</span>
+                )}
               </label>
               <input
                 value={price}
                 onChange={(e) => setPrice(e.target.value)}
-                placeholder="e.g. 2500 or Free"
+                placeholder={
+                  isPriceOptional
+                    ? "e.g. 2500, Free, or leave blank"
+                    : "e.g. 2500 or Free"
+                }
                 className="w-full px-3 py-2 text-sm rounded-md border border-input bg-background focus:outline-none focus:ring-2 focus:ring-ring"
               />
             </div>

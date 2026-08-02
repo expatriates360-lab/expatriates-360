@@ -151,13 +151,18 @@ export default async function ListingDetailPage({
                 />
               ) : null}
 
-              {/* Contact phone */}
+              {/* Contact phone — now clickable (tel: link) */}
               {listing.contact_phone ? (
                 userId ? (
-                  <div className="flex items-center gap-2 text-sm bg-muted/50 rounded-lg px-4 py-3">
+                  <a
+                    href={`tel:${listing.contact_phone.replace(/[^+\d]/g, "")}`}
+                    className="flex items-center gap-2 text-sm bg-muted/50 hover:bg-muted rounded-lg px-4 py-3 transition-colors"
+                  >
                     <Phone className="h-4 w-4 text-muted-foreground shrink-0" />
-                    <span className="font-medium">{listing.contact_phone}</span>
-                  </div>
+                    <span className="font-medium hover:underline">
+                      {listing.contact_phone}
+                    </span>
+                  </a>
                 ) : (
                   <Button variant="outline" className="w-full gap-2" asChild>
                     <Link href="/sign-in">

@@ -260,6 +260,7 @@ export default async function CandidateDetailPage({
                       icon={<Phone className="h-4 w-4" />}
                       label="Phone"
                       value={candidate.phone}
+                      href={`tel:${candidate.phone.replace(/[^+\d]/g, "")}`}
                     />
                   )}
                   {!userId && (
@@ -413,25 +414,34 @@ function InfoTile({
   value,
   capitalize,
   muted,
+  href,
 }: {
   icon: React.ReactNode;
   label: string;
   value: string;
   capitalize?: boolean;
   muted?: boolean;
+  href?: string;
 }) {
+  const valueClassName = `text-sm font-medium truncate mt-0.5 ${
+    muted ? "text-muted-foreground italic" : "text-foreground"
+  } ${capitalize ? "capitalize" : ""}`;
+
   return (
     <div className="flex items-start gap-3 rounded-xl bg-muted/40 border border-border/40 p-3 hover:bg-muted/60 transition-colors">
       <span className="mt-0.5 shrink-0 text-primary">{icon}</span>
       <div className="min-w-0">
         <p className="text-xs text-muted-foreground">{label}</p>
-        <p
-          className={`text-sm font-medium truncate mt-0.5 ${
-            muted ? "text-muted-foreground italic" : "text-foreground"
-          } ${capitalize ? "capitalize" : ""}`}
-        >
-          {value}
-        </p>
+        {href ? (
+          <a
+            href={href}
+            className={`${valueClassName} block hover:text-primary hover:underline transition-colors`}
+          >
+            {value}
+          </a>
+        ) : (
+          <p className={valueClassName}>{value}</p>
+        )}
       </div>
     </div>
   );

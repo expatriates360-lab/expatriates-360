@@ -135,6 +135,9 @@ export default function NewListingPage() {
     ? SUBCATEGORIES[category] ?? []
     : [];
 
+  // ✅ Price is optional only for the "services" category
+  const isPriceOptional = category === "services";
+
   // Force listing type to "standard" and clear external link for services & property
   useEffect(() => {
     if (category === "services" || category === "accommodation") {
@@ -172,6 +175,11 @@ export default function NewListingPage() {
     }
     if (!category) {
       toast.error("Please select a category");
+      return;
+    }
+    // ✅ Price is required for all categories EXCEPT services
+    if (!isPriceOptional && !price.trim()) {
+      toast.error("Price is required");
       return;
     }
     // Contact phone is mandatory
@@ -414,16 +422,27 @@ export default function NewListingPage() {
               </div>
             </div>
 
-            {/* Price + Currency - Currency now defaults to SAR */}
+            {/* Price + Currency - Currency now defaults to SAR, Price optional for services */}
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="text-sm font-medium block mb-1.5">
-                  Price
+                  Price{" "}
+                  {isPriceOptional ? (
+                    <span className="text-muted-foreground text-xs font-normal">
+                      (optional)
+                    </span>
+                  ) : (
+                    <span className="text-destructive">*</span>
+                  )}
                 </label>
                 <input
                   value={price}
                   onChange={(e) => setPrice(e.target.value)}
-                  placeholder="e.g. 2500 or Free"
+                  placeholder={
+                    isPriceOptional
+                      ? "e.g. 2500, Free, or leave blank"
+                      : "e.g. 2500 or Free"
+                  }
                   className="w-full px-3 py-2 text-sm rounded-md border border-input bg-background focus:outline-none focus:ring-2 focus:ring-ring"
                 />
               </div>
