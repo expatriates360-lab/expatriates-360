@@ -297,7 +297,7 @@ export function EditJobForm({ job }: { job: Job }) {
         <Section title="Company Details">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Field label="Company Name *" className="col-span-full">
-              <Input
+              <Input 
                 placeholder="e.g. Aramco Projects Ltd."
                 value={form.companyName}
                 onChange={(e) => set("companyName", e.target.value)}
