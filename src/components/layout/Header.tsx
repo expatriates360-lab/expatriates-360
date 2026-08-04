@@ -136,24 +136,14 @@ export function Header() {
 
             {/* Logo Text */}
             <span
-              className="
-                text-[30px]
-                font-extrabold
-                tracking-tight
-                leading-none
-                bg-gradient-to-r
-                from-[#0F7DD7]
-                via-[#243A8F]
-                to-[#4B178F]
-                bg-clip-text
-                text-transparent
-                select-none
-              "
+              className="text-[30px] font-extrabold tracking-tight leading-none select-none"
               style={{
                 fontFamily: "Inter, Poppins, sans-serif",
               }}
             >
-              Hunared
+              <span className="bg-gradient-to-r from-[#0F7DD7] via-[#243A8F] to-[#4B178F] bg-[length:200%_100%] bg-clip-text text-transparent animate-shimmer">
+                Hunared
+              </span>
             </span>
           </Link>
 
@@ -418,6 +408,20 @@ export function Header() {
           </div>
         </div>
       </div>
+      <style jsx>{`
+        @keyframes shimmer {
+          0% {
+            background-position: 200% 0;
+          }
+          100% {
+            background-position: -200% 0;
+          }
+        }
+
+        .animate-shimmer {
+          animation: shimmer 5s linear infinite;
+        }
+      `}</style>
     </header>
   );
 }

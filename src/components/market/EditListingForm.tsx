@@ -19,11 +19,18 @@ import type { Listing } from "@/types/database";
 
 const RichTextEditor = dynamic(
   () => import("@/components/ui/RichTextEditor").then((m) => m.RichTextEditor),
-  { ssr: false, loading: () => <div className="h-[167px] rounded-md border border-input bg-muted/30 animate-pulse" /> }
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-[167px] rounded-md border border-input bg-muted/30 animate-pulse" />
+    ),
+  }
 );
 
-const CLOUDINARY_CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ?? "";
-const CLOUDINARY_UPLOAD_PRESET = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET ?? "";
+const CLOUDINARY_CLOUD_NAME =
+  process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ?? "";
+const CLOUDINARY_UPLOAD_PRESET =
+  process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET ?? "";
 
 type ListingType = "standard" | "native" | "affiliate";
 
@@ -60,7 +67,9 @@ export function EditListingForm({ listing }: { listing: Listing }) {
   const [currency, setCurrency] = useState(listing.currency ?? "USD");
   const [category, setCategory] = useState(listing.category);
   const [location, setLocation] = useState(listing.location ?? "");
-  const [contactPhone, setContactPhone] = useState(listing.contact_phone ?? "");
+  const [contactPhone, setContactPhone] = useState(
+    listing.contact_phone ?? ""
+  );
   const [listingType, setListingType] = useState<ListingType>(
     (listing.listing_type as ListingType) ?? "standard"
   );
@@ -107,13 +116,31 @@ export function EditListingForm({ listing }: { listing: Listing }) {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!title.trim()) { toast.error("Title is required"); return; }
-    if (!description.trim()) { toast.error("Description is required"); return; }
-    // ✅ Price is required for all categories EXCEPT services
-    if (!isPriceOptional && !price.trim()) { toast.error("Price is required"); return; }
-    if (!category) { toast.error("Please select a category"); return; }
+    if (!title.trim()) {
+      toast.error("Title is required");
+      return;
+    }
+    if (!description.trim()) {
+      toast.error("Description is required");
+      return;
+    }
+    if (!isPriceOptional && !price.trim()) {
+      toast.error("Price is required");
+      return;
+    }
+    if (!category) {
+      toast.error("Please select a category");
+      return;
+    }
     if (listingType === "affiliate" && !externalLink.trim()) {
       toast.error("Please enter an external / affiliate URL");
+      return;
+    }
+
+    // ✅ NEW: At least one image mandatory (kept + new)
+    const totalImageCount = keptImages.length + newFiles.length;
+    if (totalImageCount === 0) {
+      toast.error("Please keep or upload at least one image");
       return;
     }
 
@@ -169,11 +196,13 @@ export function EditListingForm({ listing }: { listing: Listing }) {
           <CardTitle className="text-base">Listing Details</CardTitle>
         </CardHeader>
         <CardContent className="space-y-5">
-          {/* Image gallery */}
+          {/* Image gallery – now mandatory */}
           <div>
             <label className="text-sm font-medium block mb-1.5">
-              Photos{" "}
-              <span className="text-muted-foreground text-xs font-normal">(up to 8)</span>
+              Photos <span className="text-destructive">*</span>{" "}
+              <span className="text-muted-foreground text-xs font-normal">
+                (required - up to 8)
+              </span>
             </label>
             <input
               ref={fileRef}
@@ -186,7 +215,10 @@ export function EditListingForm({ listing }: { listing: Listing }) {
             <div className="flex flex-wrap gap-3">
               {/* Existing kept images */}
               {keptImages.map((src, i) => (
-                <div key={`existing-${i}`} className="relative h-24 w-24 shrink-0">
+                <div
+                  key={`existing-${i}`}
+                  className="relative h-24 w-24 shrink-0"
+                >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={src}
@@ -253,20 +285,34 @@ export function EditListingForm({ listing }: { listing: Listing }) {
               <label className="text-sm font-medium block mb-1.5">
                 Category <span className="text-destructive">*</span>
               </label>
-              <Select value={category} onValueChange={(v) => { if (v) setCategory(v); }}>
+              <Select
+                value={category}
+                onValueChange={(v) => {
+                  if (v) setCategory(v);
+                }}
+              >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select category..." />
                 </SelectTrigger>
                 <SelectContent>
                   {LISTING_CATEGORIES.map((c) => (
-                    <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>
+                    <SelectItem key={c.value} value={c.value}>
+                      {c.label}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
             <div>
-              <label className="text-sm font-medium block mb-1.5">Location</label>
-              <Select value={location} onValueChange={(v) => { if (v) setLocation(v); }}>
+              <label className="text-sm font-medium block mb-1.5">
+                Location
+              </label>
+              <Select
+                value={location}
+                onValueChange={(v) => {
+                  if (v) setLocation(v);
+                }}
+              >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select location..." />
                 </SelectTrigger>
@@ -304,14 +350,23 @@ export function EditListingForm({ listing }: { listing: Listing }) {
               />
             </div>
             <div>
-              <label className="text-sm font-medium block mb-1.5">Currency</label>
-              <Select value={currency} onValueChange={(v) => { if (v) setCurrency(v); }}>
+              <label className="text-sm font-medium block mb-1.5">
+                Currency
+              </label>
+              <Select
+                value={currency}
+                onValueChange={(v) => {
+                  if (v) setCurrency(v);
+                }}
+              >
                 <SelectTrigger className="w-full">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   {LISTING_CURRENCIES.map((c) => (
-                    <SelectItem key={c} value={c}>{c}</SelectItem>
+                    <SelectItem key={c} value={c}>
+                      {c}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -320,15 +375,24 @@ export function EditListingForm({ listing }: { listing: Listing }) {
 
           {/* Listing type */}
           <div>
-            <label className="text-sm font-medium block mb-1.5">Listing Type</label>
-            <Select value={listingType} onValueChange={(v) => setListingType(v as ListingType)}>
+            <label className="text-sm font-medium block mb-1.5">
+              Listing Type
+            </label>
+            <Select
+              value={listingType}
+              onValueChange={(v) => setListingType(v as ListingType)}
+            >
               <SelectTrigger className="w-full">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="standard">Standard (Contact to Buy)</SelectItem>
+                <SelectItem value="standard">
+                  Standard (Contact to Buy)
+                </SelectItem>
                 <SelectItem value="native">Native Purchase</SelectItem>
-                <SelectItem value="affiliate">Affiliate / External Link</SelectItem>
+                <SelectItem value="affiliate">
+                  Affiliate / External Link
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -337,7 +401,8 @@ export function EditListingForm({ listing }: { listing: Listing }) {
           {listingType === "affiliate" && (
             <div>
               <label className="text-sm font-medium block mb-1.5">
-                External Link / Affiliate URL <span className="text-destructive">*</span>
+                External Link / Affiliate URL{" "}
+                <span className="text-destructive">*</span>
               </label>
               <div className="relative">
                 <Link2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
@@ -357,7 +422,9 @@ export function EditListingForm({ listing }: { listing: Listing }) {
 
           {/* Contact phone */}
           <div>
-            <label className="text-sm font-medium block mb-1.5">Contact Phone (optional)</label>
+            <label className="text-sm font-medium block mb-1.5">
+              Contact Phone (optional)
+            </label>
             <input
               value={contactPhone}
               onChange={(e) => setContactPhone(e.target.value)}
@@ -365,7 +432,9 @@ export function EditListingForm({ listing }: { listing: Listing }) {
               type="tel"
               className="w-full px-3 py-2 text-sm rounded-md border border-input bg-background focus:outline-none focus:ring-2 focus:ring-ring"
             />
-            <p className="text-xs text-muted-foreground mt-1">Only shown to signed-in users</p>
+            <p className="text-xs text-muted-foreground mt-1">
+              Only shown to signed-in users
+            </p>
           </div>
 
           {/* Description */}
@@ -383,7 +452,9 @@ export function EditListingForm({ listing }: { listing: Listing }) {
           <div className="flex gap-3 pt-2">
             <Button type="submit" disabled={loading} className="min-w-[160px]">
               {uploading ? (
-                <><Loader2 className="h-4 w-4 animate-spin mr-2" /> Uploading...</>
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" /> Uploading...
+                </>
               ) : loading ? (
                 "Saving..."
               ) : (

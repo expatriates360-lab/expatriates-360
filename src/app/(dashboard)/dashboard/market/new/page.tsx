@@ -192,6 +192,12 @@ export default function NewListingPage() {
       return;
     }
 
+    // ✅ NEW: Image mandatory for all listing types
+    if (imageFiles.length === 0) {
+      toast.error("Please upload at least one image");
+      return;
+    }
+
     setLoading(true);
     try {
       const imageUrls: string[] = [];
@@ -257,12 +263,12 @@ export default function NewListingPage() {
             <CardTitle className="text-base">Listing Details</CardTitle>
           </CardHeader>
           <CardContent className="space-y-5">
-            {/* Photos */}
+            {/* Photos – now mandatory */}
             <div>
               <label className="text-sm font-medium block mb-1.5">
-                Photos{" "}
+                Photos <span className="text-destructive">*</span>{" "}
                 <span className="text-muted-foreground text-xs font-normal">
-                  (optional - up to 8)
+                  (required - up to 8)
                 </span>
               </label>
               <input

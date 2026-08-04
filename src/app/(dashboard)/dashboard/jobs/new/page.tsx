@@ -131,7 +131,7 @@ export default function PostJobPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-
+    
     if (!form.jobTitle.trim()) { toast.error("Job Title is required."); return; }
     if (!form.jobDescription.trim()) { toast.error("Job Description is required."); return; }
     if (!form.country) { toast.error("Country is required."); return; }

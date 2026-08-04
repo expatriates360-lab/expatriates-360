@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { Separator } from "@/components/ui/separator";
@@ -23,18 +25,9 @@ const FOOTER_LINKS = {
 };
 
 const SOCIAL_LINKS = [
-  {
-    href: "https://www.linkedin.com/in/hunaredorganization",
-    label: "in",
-  },
-  {
-    href: "https://x.com/HunaredOrg",
-    label: "𝕏",
-  },
-  {
-    href: "https://www.facebook.com/HunaredOrganization/",
-    label: "fb",
-  },
+  { href: "https://www.linkedin.com/in/hunaredorganization", label: "in" },
+  { href: "https://x.com/HunaredOrg", label: "𝕏" },
+  { href: "https://www.facebook.com/HunaredOrganization/", label: "fb" },
 ];
 
 export function Footer() {
@@ -45,43 +38,31 @@ export function Footer() {
           {/* Brand */}
           <div className="lg:col-span-2 space-y-4">
             <Link
-            href="/"
-            className="flex items-center gap-2.5 group shrink-0"
-            aria-label="Hunared home"
-          >
-            {/* Logo Icon */}
-            <Image
-              src="/assets/logos/logo-horizontal.png"
-              alt="Hunared Logo"
-              width={42}
-              height={38}
-              quality={100}
-              priority
-              className="h-10 w-10 object-contain"
-            />
-
-            {/* Logo Text */}
-            <span
-              className="
-                text-[30px]
-                font-extrabold
-                tracking-tight
-                leading-none
-                bg-gradient-to-r
-                from-[#0F7DD7]
-                via-[#243A8F]
-                to-[#4B178F]
-                bg-clip-text
-                text-transparent
-                select-none
-              "
-              style={{
-                fontFamily: "Inter, Poppins, sans-serif",
-              }}
+              href="/"
+              className="flex items-center gap-2.5 group shrink-0"
+              aria-label="Hunared home"
             >
-              Hunared
-            </span>
-          </Link>
+              <Image
+                src="/assets/logos/logo-horizontal.png"
+                alt="Hunared Logo"
+                width={42}
+                height={38}
+                quality={100}
+                priority
+                className="h-10 w-10 object-contain"
+              />
+
+              {/* Animated gradient text */}
+              <span
+                className="text-[30px] font-extrabold tracking-tight leading-none select-none"
+                style={{ fontFamily: "Inter, Poppins, sans-serif" }}
+              >
+                <span className="bg-gradient-to-r from-[#0F7DD7] via-[#243A8F] to-[#4B178F] bg-[length:200%_100%] bg-clip-text text-transparent animate-shimmer">
+                  Hunared
+                </span>
+              </span>
+            </Link>
+
             <p className="text-sm text-muted-foreground max-w-xs leading-relaxed">
               Your complete career and lifestyle portal for expatriates — connecting talent with opportunity across the globe.
             </p>
@@ -121,15 +102,29 @@ export function Footer() {
           ))}
         </div>
 
-        <Separator className="my-8" />  
+        <Separator className="my-8" />
 
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted-foreground ">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
           <div className="flex flex-col sm:flex-row items-center gap-2 w-full justify-between">
             <span>© {new Date().getFullYear()} Hunared. All rights reserved.</span>
-            
           </div>
         </div>
       </div>
+
+      {/* Animation keyframes – now works because this is a Client Component */}
+      <style jsx>{`
+        @keyframes shimmer {
+          0% {
+            background-position: 200% 0;
+          }
+          100% {
+            background-position: -200% 0;
+          }
+        }
+        .animate-shimmer {
+          animation: shimmer 5s linear infinite;   /* ← was 3s, now slower */
+        }
+      `}</style>
     </footer>
   );
 }
