@@ -583,7 +583,7 @@ export default function RegisterPage() {
             </div>
           </FormCard>
         )}
-
+        
         {/* ── STEP: Profile – EMPLOYER ── */}
         {step === "profile" && goal === "employer" && (
           <FormCard title="Company details" subtitle="Tell us about the company you're hiring for">
