@@ -38,30 +38,28 @@ export function Footer() {
           {/* Brand */}
           <div className="lg:col-span-2 space-y-4">
             <Link
-              href="/"
-              className="flex items-center gap-2.5 group shrink-0"
-              aria-label="Hunared home"
-            >
-              <Image
-                src="/assets/logos/logo-horizontal.png"
-                alt="Hunared Logo"
-                width={42}
-                height={38}
-                quality={100}
-                priority
-                className="h-10 w-10 object-contain"
-              />
+  href="/"
+  className="flex items-center gap-2.5 group shrink-0 logo-premium"
+  aria-label="Hunared home"
+>
+  <Image
+    src="/assets/logos/logo-horizontal.png"
+    alt="Hunared Logo"
+    width={42}
+    height={38}
+    quality={100}
+    priority
+    className="h-10 w-10 object-contain"
+  />
 
-              {/* Animated gradient text */}
-              <span
-                className="text-[30px] font-extrabold tracking-tight leading-none select-none"
-                style={{ fontFamily: "Inter, Poppins, sans-serif" }}
-              >
-                <span className="bg-gradient-to-r from-[#0F7DD7] via-[#243A8F] to-[#4B178F] bg-[length:200%_100%] bg-clip-text text-transparent animate-shimmer">
-                  Hunared
-                </span>
-              </span>
-            </Link>
+  {/* Logo Text – animation stays inside the letters */}
+  <span
+    className="logo-text relative text-[30px] font-extrabold tracking-tight leading-none select-none"
+    style={{ fontFamily: "Inter, Poppins, sans-serif" }}
+  >
+    <span className="logo-text-gradient">Hunared</span>
+  </span>
+</Link>
 
             <p className="text-sm text-muted-foreground max-w-xs leading-relaxed">
               Your complete career and lifestyle portal for expatriates — connecting talent with opportunity across the globe.
@@ -113,17 +111,69 @@ export function Footer() {
 
       {/* Animation keyframes – now works because this is a Client Component */}
       <style jsx>{`
-        @keyframes shimmer {
-          0% {
-            background-position: 200% 0;
-          }
-          100% {
-            background-position: -200% 0;
-          }
-        }
-        .animate-shimmer {
-          animation: shimmer 5s linear infinite;   /* ← was 3s, now slower */
-        }
+  /* ── Premium Logo Base ─────────────────────────────── */
+  .logo-premium {
+    will-change: transform;
+    transition: transform 300ms ease-out;
+  }
+
+  .logo-premium:hover {
+    transform: scale(1.03);
+  }
+
+  /* ── Text container ────────────────────────────────── */
+  .logo-text {
+    position: relative;
+    display: inline-block;
+  }
+
+  /* ── Animation stays INSIDE the letters ───────────── */
+  .logo-text-gradient {
+    background: linear-gradient(
+      115deg,
+      #2ea8ff 0%,
+      #356dff 22%,
+      #5ef7ff 45%,
+      #2a2f8f 68%,
+      #7fdbff 100%
+    );
+    background-size: 250% 250%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: logoInsideShift 6s ease-in-out infinite;
+    will-change: background-position;
+  }
+
+  /* Slightly brighter on hover (still inside letters) */
+  .logo-premium:hover .logo-text-gradient {
+    background: linear-gradient(
+      115deg,
+      #4eb8ff 0%,
+      #4a7fff 22%,
+      #7ef9ff 45%,
+      #3a3faf 68%,
+      #9fe5ff 100%
+    );
+    background-size: 250% 250%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    transition: background 300ms ease-out;
+  }
+
+  /* ── Smooth color movement inside the text ────────── */
+  @keyframes logoInsideShift {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
       `}</style>
     </footer>
   );

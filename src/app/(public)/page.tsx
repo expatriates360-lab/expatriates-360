@@ -2,7 +2,7 @@ import { HeroSection } from "@/components/home/HeroSection";
 import { FeaturedJobsSection } from "@/components/home/FeaturedJobsSection";
 import { BrowseCategories } from "@/components/home/BrowseCategories";
 import { HunaredProgram } from "@/components/home/HunaredProgram";
-import { WhyUsSection } from "@/components/home/WhyUsSection";
+import { WhyUsSection } from "@/components/home/HunaredFinder";
 import { CtaBanner } from "@/components/home/CtaBanner";
 import type { Metadata } from "next";
 
@@ -17,7 +17,7 @@ export default function HomePage() {
     <>
       <HeroSection />
       <BrowseCategories />
-      <FeaturedJobsSection />
+      {/* <FeaturedJobsSection /> */}
       <HunaredProgram />
       <WhyUsSection />
       <CtaBanner />

@@ -118,34 +118,32 @@ export function Header() {
       <div className={cn("mx-auto px-4 sm:px-6 lg:px-8", scrolled ? "max-w-full" : "max-w-7xl")}>
         <div className="flex h-16 items-center justify-between gap-3">
           {/* Logo */}
-          <Link
-            href="/"
-            className="flex items-center gap-2.5 group shrink-0"
-            aria-label="Hunared home"
-          >
-            {/* Logo Icon */}
-            <Image
-              src="/assets/logos/logo-horizontal.png"
-              alt="Hunared Logo"
-              width={42}
-              height={38}
-              quality={100}
-              priority
-              className="h-10 w-10 object-contain"
-            />
+<Link
+  href="/"
+  className="flex items-center gap-2.5 group shrink-0 logo-premium"
+  aria-label="Hunared home"
+>
+  {/* Logo Icon */}
+  <Image
+    src="/assets/logos/logo-horizontal.png"
+    alt="Hunared Logo"
+    width={42}
+    height={38}
+    quality={100}
+    priority
+    className="h-10 w-10 object-contain"
+  />
 
-            {/* Logo Text */}
-            <span
-              className="text-[30px] font-extrabold tracking-tight leading-none select-none"
-              style={{
-                fontFamily: "Inter, Poppins, sans-serif",
-              }}
-            >
-              <span className="bg-gradient-to-r from-[#0F7DD7] via-[#243A8F] to-[#4B178F] bg-[length:200%_100%] bg-clip-text text-transparent animate-shimmer">
-                Hunared
-              </span>
-            </span>
-          </Link>
+  {/* Logo Text */}
+  <span
+    className="logo-text relative text-[30px] font-extrabold tracking-tight leading-none select-none"
+    style={{
+      fontFamily: "Inter, Poppins, sans-serif",
+    }}
+  >
+    <span className="logo-text-gradient">Hunared</span>
+  </span>
+</Link>
 
           {/* Desktop Nav with Mega Menu */}
           <nav
@@ -407,21 +405,72 @@ export function Header() {
             </Show>
           </div>
         </div>
-      </div>
-      <style jsx>{`
-        @keyframes shimmer {
-          0% {
-            background-position: 200% 0;
-          }
-          100% {
-            background-position: -200% 0;
-          }
-        }
+            </div>
+     <style jsx>{`
+  /* ── Premium Logo Base ─────────────────────────────── */
+  .logo-premium {
+    will-change: transform;
+    transition: transform 300ms ease-out;
+  }
 
-        .animate-shimmer {
-          animation: shimmer 5s linear infinite;
+  .logo-premium:hover {
+    transform: scale(1.03);
+  }
+
+  /* ── Text container ────────────────────────────────── */
+  .logo-text {
+    position: relative;
+    display: inline-block;
+  }
+
+  /* ── Animation stays INSIDE the letters ───────────── */
+  .logo-text-gradient {
+    background: linear-gradient(
+      115deg,
+      #2ea8ff 0%,
+      #356dff 22%,
+      #5ef7ff 45%,
+      #2a2f8f 68%,
+      #7fdbff 100%
+    );
+    background-size: 250% 250%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: logoInsideShift 6s ease-in-out infinite;
+    will-change: background-position;
+  }
+
+  /* Slightly brighter on hover (still inside letters) */
+  .logo-premium:hover .logo-text-gradient {
+    background: linear-gradient(
+      115deg,
+      #4eb8ff 0%,
+      #4a7fff 22%,
+      #7ef9ff 45%,
+      #3a3faf 68%,
+      #9fe5ff 100%
+    );
+    background-size: 250% 250%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    transition: background 300ms ease-out;
+  }
+
+  /* ── Smooth color movement inside the text ────────── */
+        @keyframes logoInsideShift {
+        0% {
+          background-position: 0% 50%;
         }
-      `}</style>
-    </header>
-  );
+        50% {
+          background-position: 100% 50%;
+        }
+        100% {
+          background-position: 0% 50%;
+        }
+      }
+    `}</style>
+  </header>
+);
 }
